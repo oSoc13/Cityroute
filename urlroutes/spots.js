@@ -14,7 +14,7 @@ exports.findSpotsByLatLong = function (request, response) {
     var https = require('https');
     var querystring = require('querystring');
 
-    // check for url parameters, lat and long should be defined for a location query.
+    // check for url parameters, lat and long should be defined.
     if (request.query.latitude != undefined && request.query.longitude != undefined) {
         
         // date time is also required for the City Life API, so get it in the right format
@@ -36,7 +36,7 @@ exports.findSpotsByLatLong = function (request, response) {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Content-Length': post_data.length
-        }
+            }
         };
 
         // create POST request, return result of POST request as result of this API call.
@@ -74,10 +74,24 @@ exports.findSpotsByLatLong = function (request, response) {
  */
 exports.findById = function (request, response) {
     var utils = require("../utils");
+    var https = require('https');
 
-    response.send({
-        "meta": utils.createOKMeta(),
-        "response":
-        { id: request.params.id, name: "spot1", description: "description" }
+    // set City Life API GET options
+    var get_options = {
+        host: "alpha.vikingspots.com",
+        path: "/en/api/4/spots/getbyid/?spot_id=" + request.params.id,
+        method: "GET",
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    };
+
+    var get_req = https.request(get_options, function (res) {
+        res.setEncoding("utf8");
+        res.on('data', function (chunk) {
+            response.send(chunk);
+        });
     });
+
+    get_req.end();
 };
