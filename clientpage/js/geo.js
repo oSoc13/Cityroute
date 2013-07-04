@@ -19,7 +19,7 @@ function showPosition(position) {
    // var request = "http://localhost:1337/spots?" + "latitude=" +  position.coords.latitude + "&longitude=" +  position.coords.longitude;
    
    
-    var url =  "http://10.129.129.67:1337/spots?latitude=12&longitude=12";
+    var url =  "http://localhost:1337/spots?latitude=12&longitude=12";
     $.ajax({
        type: 'GET',
        crossDomain:true,
