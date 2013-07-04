@@ -25,7 +25,8 @@ exports.findSpotsByLatLong = function (request, response) {
         var post_data = querystring.stringify({
             "longitude" : request.query.longitude,
             "latitude" : request.query.latitude,
-            "time" : "" + now
+            "time": "" + now,
+            "max": 2
         });
 
         // set City Life API POST options
