@@ -1,5 +1,7 @@
-﻿// @author: Thomas Stockx
-// @copyright: OKFN Belgium
+﻿/**
+ * @author: Thomas Stockx
+ * @copyright: OKFN Belgium
+ */
 
 // Node.js entry point
 
