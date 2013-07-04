@@ -4,12 +4,16 @@
 // Node.js entry point
 
 var express = require("express");
+var utils = require("./utils");
+// bind spot requests to spots.js
 var spots = require("./urlroutes/spots");
 
 var app = express();
 
 // define the spots API url routes.
-app.get("/spots", spots.findAll);
+// requires latitude & longitude as url params
+app.get("/spots", spots.findSpotsByLatLong);
+// requires id
 app.get("/spots/:id", spots.findById);
 
 
