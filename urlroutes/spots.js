@@ -13,6 +13,7 @@ exports.findSpotsByLatLong = function (request, response) {
     var utils = require("../utils");
     var https = require('https');
     var querystring = require('querystring');
+    var requestlib = require('request');
 
     // check for url parameters, lat and long should be defined.
     if (request.query.latitude != undefined && request.query.longitude != undefined) {
@@ -21,12 +22,27 @@ exports.findSpotsByLatLong = function (request, response) {
         var time = new Date();
         var now = "" + time.getFullYear() + "-" + utils.addZero(time.getMonth()) + "-" + utils.addZero(time.getDay()) + " " + utils.addZero(time.getHours()) + ":" + utils.addZero(time.getMinutes()) + ":" + utils.addZero(time.getSeconds());
 
+        requestlib({
+            uri: "https://alpha.vikingspots.com/en/api/4/channels/discover/",
+            method: "POST",
+            form: {
+                "longitude": request.query.longitude,
+                "latitude": request.query.latitude,
+                "time": "" + now
+            },
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            }
+        }, function(error, responselib, body) {
+            response.send(body);
+        });
+
+        /*
         // add the post parameters required for City Life API
         var post_data = querystring.stringify({
             "longitude" : request.query.longitude,
             "latitude" : request.query.latitude,
-            "time": "" + now,
-            "max": 2
+            "time": "" + now
         });
 
         // set City Life API POST options
@@ -44,13 +60,17 @@ exports.findSpotsByLatLong = function (request, response) {
         var post_req = https.request(post_options, function (res) {
             res.setEncoding("utf8");
             res.on('data', function (chunk) {
+                console.log(chunk);
                 response.send(chunk);
+            });
+            res.on('end', function (chunk) {
+                console.log("END END\n\n");
             });
         });
 
         // do POST request to City Life API
         post_req.write(post_data);
-        post_req.end();
+        post_req.end();*/
 
         /*response.send({
             "meta": utils.createOKMeta(),
