@@ -23,59 +23,26 @@ exports.findSpotsByLatLong = function (request, response) {
         var now = "" + time.getFullYear() + "-" + utils.addZero(time.getMonth()) + "-" + utils.addZero(time.getDay()) + " " + utils.addZero(time.getHours()) + ":" + utils.addZero(time.getMinutes()) + ":" + utils.addZero(time.getSeconds());
 
         requestlib({
-            uri: "https://alpha.vikingspots.com/en/api/4/channels/discover/",
+            uri: "https://alpha.vikingspots.com/en/api/4/channels/discoverchannel/",
             method: "POST",
             form: {
                 "longitude": request.query.longitude,
                 "latitude": request.query.latitude,
-                "time": "" + now
+                "time": "" + now,
+                "params": '{ "channel": "nearbyspots" }'
             },
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
+                'Content-Type': 'application/x-www-form-urlencoded'
             }
-        }, function(error, responselib, body) {
+        }, function (error, responselib, body) {
+            var jsonResult = JSON.parse(body);
+
+            console.log(jsonResult);
+
             response.send(body);
         });
 
-        /*
-        // add the post parameters required for City Life API
-        var post_data = querystring.stringify({
-            "longitude" : request.query.longitude,
-            "latitude" : request.query.latitude,
-            "time": "" + now
-        });
-
-        // set City Life API POST options
-        var post_options = {
-            host: "alpha.vikingspots.com",
-            path: "/en/api/4/channels/discover/",
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Content-Length': post_data.length
-            }
-        };
-
-        // create POST request, return result of POST request as result of this API call.
-        var post_req = https.request(post_options, function (res) {
-            res.setEncoding("utf8");
-            res.on('data', function (chunk) {
-                console.log(chunk);
-                response.send(chunk);
-            });
-            res.on('end', function (chunk) {
-                console.log("END END\n\n");
-            });
-        });
-
-        // do POST request to City Life API
-        post_req.write(post_data);
-        post_req.end();*/
-
-        /*response.send({
-            "meta": utils.createOKMeta(),
-            "response": { time: now, latitude: request.query.latitude, longitude: request.query.longitude }
-        });*/
+       
 
     }
     else {
