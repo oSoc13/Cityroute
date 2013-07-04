@@ -39,11 +39,8 @@ exports.findSpotsByLatLong = function (request, response) {
 
             console.log(jsonResult);
 
-            response.send(body);
+            response.send(JSON.stringify(jsonResult.response.data.items));
         });
-
-       
-
     }
     else {
         // bad request
