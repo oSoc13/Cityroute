@@ -42,7 +42,6 @@ local.properties
 *.sln.docstates
 *.sln
 *.njsproj
-dbconfig.js
 
 # Build results
 
