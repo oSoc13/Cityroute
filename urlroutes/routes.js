@@ -59,11 +59,11 @@ exports.addRoute = function (request, response) {
     console.log(config.dbname + "," + config.collection);
     var errorThingy = "";
 
-    collection.insert({"name":"test", "points":[ 
-                                                   {"item": 1},
-                                                   {"item": 2},
-                                                   {"item": 3},
-                                                   { "item": 4 }]
+    collection.insert({"name":"Testroute", "points":[ 
+                                                   {"item": 33629},
+                                                   {"item": 7},
+                                                   {"item": 430},
+                                                   { "item": 134 }]
     }), function(err, docs) {errorThingy = err; };
 
     response.statusCode = 200;
