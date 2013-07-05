@@ -41,3 +41,32 @@ exports.findById = function (request, response) {
             }
     });
 };
+
+
+
+/**
+ * Add a route to the mongoDB database
+ * @param a list of ids of spots
+ * @param a name for the route
+ @return the route id
+ */
+exports.addRoute = function (request, response) {
+    var mongojs = require('mongojs');
+    var config = require('./../dbconfig');
+    var db = mongojs(config.dbname);
+    var collection = db.collection(config.collection);
+
+    console.log(config.dbname + "," + config.collection);
+    var errorThingy = "";
+
+    collection.insert({"name":"test", "points":[ 
+                                                   {"item": 1},
+                                                   {"item": 2},
+                                                   {"item": 3},
+                                                   { "item": 4 }]
+    }), function(err, docs) {errorThingy = err; };
+
+    response.statusCode = 200;
+    response.send(errorThingy + " Route added");
+
+};

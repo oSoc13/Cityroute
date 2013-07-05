@@ -7,6 +7,7 @@ var express = require("express");
 var utils = require("./utils");
 // bind spot requests to spots.js
 var spots = require("./urlroutes/spots");
+var routes = require("./urlroutes/routes");
 
 var app = express();
 app.all('/*', function (req, res, next) {
@@ -21,6 +22,7 @@ app.get("/spots", spots.findSpotsByLatLong);
 // requires id
 app.get("/spots/:id", spots.findById);
 
+app.get("/routes/", routes.addRoute);
 
 console.log("Listening on port 1337...");
 // start server
