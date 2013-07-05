@@ -10,6 +10,7 @@
  */
 exports.findRoutesStartingAtSpot = function (request, response) {
     var utils = require("../utils");
+    var querystring = require('querystring');
 
     // check for url parameters, spot_id should be defined
     if (typeof request.query.spot_id !== undefined) {
@@ -18,7 +19,16 @@ exports.findRoutesStartingAtSpot = function (request, response) {
         var db = mongojs(config.dbname);
         var collection = db.collection(config.collection);
 
-        //collection.
+        var errorThingy = "";
+        var docsThingy;
+
+        // find all routes which have item x as starting point.
+        collection.find({ 'points.0': { item: 33629 } })
+            .toArray(function (err, docs) {
+                // do check if docs is empty before sending
+                response.send(docs);
+            });
+
     }
     else {
         // bad request

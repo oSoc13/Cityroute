@@ -22,7 +22,7 @@ app.get("/spots", spots.findSpotsByLatLong);
 // requires id
 app.get("/spots/:id", spots.findById);
 
-app.get("/routes/", routes.addRoute);
+app.get("/routes", routes.findRoutesStartingAtSpot);
 
 console.log("Listening on port 1337...");
 // start server
