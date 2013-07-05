@@ -11,28 +11,24 @@
 exports.findRoutesStartingAtSpot = function (request, response) {
     var utils = require("../utils");
     var querystring = require('querystring');
+    var mongojs = require('mongojs');
+    var config = require('../auth/dbconfig');
+
+    var db = mongojs(config.dbname);
+    var collection = db.collection(config.collection);
 
     // check for url parameters, spot_id should be defined
-    if (typeof request.query.spot_id !== undefined) {
-        var mongojs = require('mongojs');
-        var config = require('../auth/dbconfig');
-        var db = mongojs(config.dbname);
-        var collection = db.collection(config.collection);
-
-        var errorThingy = "";
-        var docsThingy;
-        
+    if (typeof request.query.spot_id !== undefined) {        
         // find all routes which have item x as starting point.
         collection.find({ 'points.0': { item: parseInt(request.query.spot_id) } })
             .toArray(function (err, docs) {
-                // do check if docs is empty before sending
+                // return the list of routes
                 response.send(docs);
             });
 
     }
     else {
         // bad request
-        response.statusCode = 400;
         response.send({
             "meta": utils.createErrorMeta(400, "X_001", "The 'spot_id' has no data and doesn't allow a default or null value."),
             "response": {}
@@ -47,16 +43,21 @@ exports.findRoutesStartingAtSpot = function (request, response) {
  */
 exports.findById = function (request, response) {
     var utils = require("../utils");
+    var mongojs = require('mongojs');
+    var config = require('../auth/dbconfig');
+    var querystring = require('querystring');
 
-    response.send({
-        "meta": utils.createOKMeta(),
-        "response":
-            {
-                id: request.params.id, name: "route1", description: "description"
-            }
-    });
+    var db = mongojs(config.dbname);
+    var collection = db.collection(config.collection);
+    var ObjectId = mongojs.ObjectId;
+
+    // find the route by its id.
+    collection.find({ '_id': ObjectId(request.params.id) })
+            .toArray(function (err, docs) {
+                // return that route.
+                response.send(docs);
+            });
 };
-
 
 
 /**
@@ -72,16 +73,13 @@ exports.addRoute = function (request, response) {
     var collection = db.collection(config.collection);
 
     console.log(config.dbname + "," + config.collection);
-    var errorThingy = "";
 
     collection.insert({"name":"Testroute", "points":[ 
                                                    {"item": 33629},
                                                    {"item": 7},
                                                    {"item": 430},
                                                    { "item": 134 }]
-    }), function(err, docs) {errorThingy = err; };
-
-    response.statusCode = 200;
-    response.send(errorThingy + " Route added");
-
+    }), function (err, docs) {
+        response.send(" Route added");
+    };
 };
