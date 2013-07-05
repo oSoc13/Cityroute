@@ -21,9 +21,9 @@ exports.findRoutesStartingAtSpot = function (request, response) {
 
         var errorThingy = "";
         var docsThingy;
-
+        
         // find all routes which have item x as starting point.
-        collection.find({ 'points.0': { item: 33629 } })
+        collection.find({ 'points.0': { item: parseInt(request.query.spot_id) } })
             .toArray(function (err, docs) {
                 // do check if docs is empty before sending
                 response.send(docs);
