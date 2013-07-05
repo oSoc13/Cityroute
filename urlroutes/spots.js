@@ -14,6 +14,7 @@ exports.findSpotsByLatLong = function (request, response) {
     var https = require('https');
     var querystring = require('querystring');
     var requestlib = require('request');
+    var citylife = require('../auth/citylife');
 
     // check for url parameters, lat and long should be defined.
     if (request.query.latitude != undefined && request.query.longitude != undefined) {
@@ -23,7 +24,7 @@ exports.findSpotsByLatLong = function (request, response) {
         var now = "" + time.getFullYear() + "-" + utils.addZero(time.getMonth()) + "-" + utils.addZero(time.getDay()) + " " + utils.addZero(time.getHours()) + ":" + utils.addZero(time.getMinutes()) + ":" + utils.addZero(time.getSeconds());
 
         requestlib({
-            uri: "https://alpha.vikingspots.com/en/api/4/channels/discoverchannel/",
+            uri: citylife.discoverChannelCall,
             method: "POST",
             form: {
                 "longitude": request.query.longitude,
@@ -60,23 +61,20 @@ exports.findSpotsByLatLong = function (request, response) {
 exports.findById = function (request, response) {
     var utils = require("../utils");
     var https = require('https');
+    var requestlib = require('request');
+    var citylife = require('../auth/citylife');
 
-    // set City Life API GET options
-    var get_options = {
-        host: "alpha.vikingspots.com",
-        path: "/en/api/4/spots/getbyid/?spot_id=" + request.params.id,
+    requestlib({
+        uri: citylife.getSpotByIdCall + request.params.id,
         method: "GET",
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
         }
-    };
+    }, function (error, responselib, body) {
+        var jsonResult = JSON.parse(body);
 
-    var get_req = https.request(get_options, function (res) {
-        res.setEncoding("utf8");
-        res.on('data', function (chunk) {
-            response.send(chunk);
-        });
+        console.log(jsonResult);
+
+        response.send(JSON.stringify(jsonResult));
     });
-
-    get_req.end();
 };
