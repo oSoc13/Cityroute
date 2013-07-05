@@ -1,11 +1,15 @@
-//@author: Mathias Raets
-//@copyright: OFKN be
+/**
+* @author: Mathias Raets
+* @copyright: OFKN be
+*/
 
-//acquire geolocation
+/**
+* acquire geolocation
+*/
 $(document).ready(function(){
     
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showPosition);
+        navigator.geolocation.getCurrentPosition(onLocationKnown);
     }
     else {
         $("#geolocationPar").text("Geolocation is not supported by this browser."   );
@@ -13,8 +17,10 @@ $(document).ready(function(){
   });
   
 
-// callback function for the geolocation API
-function showPosition(position) {
+/**
+* callback function for the geolocation API
+*/
+function onLocationKnown(position) {
     $("#geolocationPar").html("Latitude: " + position.coords.latitude +  "</br>Longitude: " + position.coords.longitude);   
    
    // send a request to the nodeJS API to acquire the nearby spots
@@ -25,19 +31,23 @@ function showPosition(position) {
        type: 'GET',
        crossDomain:true,
         url: url,
-        success: successSpots,
+        success: onGetSpots,
         error: function(jqXHR, errorstatus, errorthrown) {
            alert("Error: " + errorstatus);
         }
     });
 };
 
-// callback function after the call in showPosition
-function successSpots(data, textStatus, jqXHR) {
+/**
+* callback function after the call in showPosition
+*/
+function onGetSpots(data, textStatus, jqXHR) {
     parseSpotList(data);
 };
 
-// parse the list of nearby spots and show them in an (ugly) table
+/**
+* parse the list of nearby spots and show them in an (ugly) table
+*/
 function parseSpotList( spotList ){
     var parsedSpotlist = JSON.parse(spotList);
     $.each(parsedSpotlist, function(index, value) {
@@ -46,26 +56,32 @@ function parseSpotList( spotList ){
     });    
 };
 
-// show a list of possible routes for a given spot ID
-// @param spotID: the ID of the spot
+/**
+* show a list of possible routes for a given spot ID
+* @param spotID: the ID of the spot
+*/
 function showRoute ( spotID ){
-    // send a request to the nodeJS API to acquire the nearby spots
-   // parameters: latitude and longitude
-   // returns: list of spots
+   /** 
+   * send a request to the nodeJS API to acquire the nearby spots
+   * parameters: latitude and longitude
+   * returns: list of spots
+   */
     var url =  "http://localhost:1337/routes/?spot_id=" + spotID;
     $.ajax({
        type: 'GET',
        crossDomain:true,
         url: url,
-        success: successRoute,
+        success: onGetRoutes,
         error: function(jqXHR, errorstatus, errorthrown) {
            alert("Error: " + errorstatus);
         }
     });
 };
 
-// callback function after requesting the routes for a spot
-function successRoute(data, textStatus, jqXHR) {    
+/**
+* callback function after requesting the routes for a spot
+*/
+function onGetRoutes(data, textStatus, jqXHR) {    
     $("#routes").html("");
     // for each route
     $.each(data, function (routeIndex, routeValue) {
