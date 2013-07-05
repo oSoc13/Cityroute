@@ -85,11 +85,20 @@ function onGetRoutes(data, textStatus, jqXHR) {
     $("#routes").html("");
     // for each route
     $.each(data, function (routeIndex, routeValue) {
-        $("#routes").append("<table><th><td>Route " + routeValue.name + "</th></td>");
+        $("#routes").append("<table><th><td>Route " + routeValue.name + 
+            "</th><th><input type='button' value='Select Route' onclick=selectRoute('" + routeValue._id + "') /></th></tr>");
         // for each spot
         $.each(routeValue.points, function(spotIndex, spotValue) {
             $("#routes").append("<tr><td>Spot:  " + spotValue.item + "</td></tr>");
         });
         $("#routes").append("</table>");
     });
+};
+
+/**
+* selects a given route
+* @param routeID the id for the route
+*/
+function selectRoute(routeID) {
+    alert("RouteID: " + routeID);
 };
