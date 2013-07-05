@@ -17,7 +17,7 @@ exports.findSpotsByLatLong = function (request, response) {
     var citylife = require('../auth/citylife');
 
     // check for url parameters, lat and long should be defined.
-    if (request.query.latitude != undefined && request.query.longitude != undefined) {
+    if (typeof request.query.latitude !== undefined && typeof request.query.longitude !== undefined) {
         
         // date time is also required for the City Life API, so get it in the right format
         var time = new Date();

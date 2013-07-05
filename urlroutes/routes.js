@@ -12,8 +12,13 @@ exports.findRoutesStartingAtSpot = function (request, response) {
     var utils = require("../utils");
 
     // check for url parameters, spot_id should be defined
-    if (request.query.spot_id != undefined) {
+    if (typeof request.query.spot_id !== undefined) {
+        var mongojs = require('mongojs');
+        var config = require('../auth/dbconfig');
+        var db = mongojs(config.dbname);
+        var collection = db.collection(config.collection);
 
+        //collection.
     }
     else {
         // bad request
