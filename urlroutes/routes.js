@@ -52,7 +52,7 @@ exports.findById = function (request, response) {
  */
 exports.addRoute = function (request, response) {
     var mongojs = require('mongojs');
-    var config = require('./../dbconfig');
+    var config = require('../auth/dbconfig');
     var db = mongojs(config.dbname);
     var collection = db.collection(config.collection);
 
