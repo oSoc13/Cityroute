@@ -42,6 +42,7 @@ local.properties
 *.sln.docstates
 *.sln
 *.njsproj
+auth/citylife.js
 
 # Build results
 
