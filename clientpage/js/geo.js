@@ -40,8 +40,6 @@ function getGeolocation()
             mapOptions);
 }
 
-
-
 /**
 * callback function for the geolocation API
 */
@@ -77,11 +75,35 @@ function parseSpotList( spotList ){
     var parsedSpotlist = JSON.parse(spotList);
     $.each(parsedSpotlist, function(index, value) {
         $('#spotListTable').append('<tr><td>' + value.title + '</td><td>' + value.meta_info.distance_str + 
-        '</td><td> <input type="button" onclick=showRoute("' + value.link.params.id + '") value="Check In" /></tr>');
+        '</td><td> <input type="button" onclick=checkIn("' + value.link.params.id + '") value="Check In" /></tr>');
         $("#geolocationPar").hide();
         $("#spotList").show();
     });    
 };
+
+/**
+* check in at a given spot
+* @param spotID the id of the spot where you want to check in
+*/
+function checkIn( spotID ) {
+    var url =  "http://" + config_serverAddress + "/spots/checkin?spot_id=" + spotID + "&token=" + $.cookie("token");
+    $.ajax({
+       type: 'GET',
+       crossDomain:true,
+        url: url,
+        success: onCheckedIn,
+        error: function(jqXHR, errorstatus, errorthrown) {
+           alert("Error: " + errorstatus);
+        }
+    });
+};
+
+/**
+* callback function when checked in
+*/
+function onCheckedIn(data, textStatus, jqXHR) { 
+    showRoute(data.response.data.spot_id);
+}
 
 /**
 * show a list of possible routes for a given spot ID

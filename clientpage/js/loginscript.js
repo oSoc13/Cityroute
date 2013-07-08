@@ -36,10 +36,10 @@ function loginuser(){
 };
 
 function onLoggedIn(data, textStatus, jqXHR) {
-    if (textStatus == "success"){
+    if (data != ""){
         $.cookie("token", data.response.token);
         location.reload();
     }
     else
-        alert(textstatus);
+        alert("Incorrect username or password");
 };
