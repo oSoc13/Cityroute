@@ -96,9 +96,32 @@ function onGetRoutes(data, textStatus, jqXHR) {
 };
 
 /**
-* selects a given route
+* requests all the information for a given route
 * @param routeID the id for the route
 */
 function selectRoute(routeID) {
-    alert("RouteID: " + routeID);
+   /**
+   * send a request to the nodeJS API to acquire the nearby spots
+   * parameters: latitude and longitude
+   * returns: list of spots
+   */
+    var url =  "http://localhost:1337/routes/" + routeID;
+    $.ajax({
+       type: 'GET',
+       crossDomain:true,
+        url: url,
+        success: onGetRouteByID,
+        cache: false,
+        error: function(jqXHR, errorstatus, errorthrown) {
+           alert("Error: " + errorstatus);
+        }
+    });
 };
+
+/**
+* Callback function after receiving route information
+*/
+function onGetRouteByID(data, textStatus, jqXHR) { 
+    alert(data.name);
+};
+
