@@ -85,7 +85,10 @@ exports.checkIn = function (request, response) {
                 'Content-Type': 'application/json'
             }
         }, function (error, responselib, body) {
+            if (typeof body !== undefined && typeof body.response !== undefined)
+            body.response.data.spot_id = request.query.spot_id;
             response.send(body);
+            
         });
     }
     else {
