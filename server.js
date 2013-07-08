@@ -10,6 +10,8 @@ var spots = require("./urlroutes/spots");
 var routes = require("./urlroutes/routes");
 
 var app = express();
+app.use(express.bodyParser());
+
 app.all('/*', function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "X-Requested-With");
@@ -25,8 +27,11 @@ app.get("/spots/:id", spots.findById);
 // define the routes API url routes.
 // requires spot_id as url param
 app.get("/routes", routes.findRoutesStartingAtSpot);
+// requires name, description and list of spot_id's
+app.post("/routes", routes.addRoute);
 // requires ID
 app.get("/routes/:id", routes.findById);
+
 
 console.log("Listening on port 1337...");
 // start server
