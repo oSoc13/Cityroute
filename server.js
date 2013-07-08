@@ -27,6 +27,7 @@ app.get("/users/login/:base64", users.login);
 // requires latitude & longitude as url params
 app.get("/spots", spots.findSpotsByLatLong);
 // requires id
+app.get("/spots/checkin", spots.checkIn);
 app.get("/spots/:id", spots.findById);
 
 // define the routes API url routes.
