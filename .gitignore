@@ -217,3 +217,10 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+
+
+
+##############
+## Api keys
+##############
+clientpage/js/auth/apikey.js

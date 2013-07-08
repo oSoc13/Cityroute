@@ -6,7 +6,12 @@
 /**
 * acquire geolocation
 */
+
+var globalMapsKey = "";
 $(document).ready(function(){
+    
+    $.getScript("./js/auth/apikey.js",function(){globalMapsKey = mapsapikey;});
+    
     
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(onLocationKnown);
