@@ -27,13 +27,12 @@
         <div class="header-container">
             <header class="wrapper clearfix">
                 <h1 class="title">CityRoute</h1>
-                <nav>
-                    <!--<ul>
-                        <li><a href="#">nav ul li a</a></li>
-                        <li><a href="#">nav ul li a</a></li>
-                        <li><a href="#">nav ul li a</a></li>
-                    </ul>-->
-                </nav>
+                <!--<nav>
+                    <ul>
+                        <li><a href="#">Check In</a></li>
+                        <li><a href="#">Log In</a></li>
+                    </ul>
+                </nav>-->
             </header>
         </div>
 
@@ -42,12 +41,21 @@
 
                 <article style="height: 100%">
                     <header>
-                        <h1>CityRoute</h1>
                         <p id = "geolocationPar">Waiting for geolocation...</p>
                         <div id="spotList">
                             <table id="spotListTable"></table>
                         </div>
                     </header>
+                    <div id = "login">
+                        <form>
+                        <table>
+                        <tr><td>Username</td><td><input id="username" type = "text"/> </td></tr>
+                        <tr><td>Password</td><td><input id="password" type = "password"/> </td></tr>
+                        <tr><td><input type="button" value="Log In" onclick="loginuser()"/></td></tr>
+                        </table>
+                        </form>
+                    </div>
+                    
                     <section>
                         <div id="routes"/>
                     </section>
@@ -55,10 +63,6 @@
                     <section style="height: 100%">
                     <div id="map-canvas" style="width: 90%; height: 90%"></div>
                     </section>
-                    
-                    <footer>
-     
-                    </footer>
                 </article>
 
                 <aside>
@@ -68,6 +72,18 @@
             </div> <!-- #main -->
         </div> <!-- #main-container -->
         
+        <script src="js/auth/config.js"></script> 
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script> 
+        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.1.min.js"><\/script>')</script>
+        <script src="js/socket.io/socket.io.js"></script>
+        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+        <script type="text/javascript" src="js/geo.js"></script>
+        <script type="text/javascript" src="js/loginscript.js"></script>
+        <script type="text/javascript" src="js/jquery.base64.js"></script>
+        <script type="text/javascript" src="js/jquery.cookie.js"></script>
+
+        <script src="js/main.js"></script>
+        
 
      <!--   <div class="footer-container">
             <footer class="wrapper">
@@ -76,14 +92,7 @@
         </div>-->
 
 
-        <script src="js/auth/config.js"></script> 
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script> 
-        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.1.min.js"><\/script>')</script>
-        <script src="js/socket.io/socket.io.js"></script>
-        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-        <script type="text/javascript" src="js/geo.js"/>
-
-        <script src="js/main.js"></script>
+ 
 
     </body>
 </html>
