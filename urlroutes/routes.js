@@ -18,12 +18,13 @@ exports.findRoutesStartingAtSpot = function (request, response) {
     var collection = db.collection(config.collection);
 
     // check for url parameters, spot_id should be defined
-    if (typeof request.query.spot_id !== undefined) {        
+    if (typeof request.query.spot_id !== undefined) {   
+        var spot_id_safe = parseInt(request.query.spot_id);
         // find all routes which have item x as starting point.
         collection.find({ 'points.0': { item: parseInt(request.query.spot_id) } })
             .toArray(function (err, docs) {
                 // the list of routes starting at Spot is stored in the docs array
-                collection.find({ $where: 'this.points[this.points.length-1].item == ' + request.query.spot_id })
+                collection.find({ $where: 'this.points[this.points.length-1].item == ' + spot_id_safe })
                     .toArray(function (err, docs2) {
                         // the list of routes ending at Spot is stored in the docs2 array
                         // concat these arrays, and return the JSON.
