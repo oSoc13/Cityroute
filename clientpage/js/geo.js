@@ -17,13 +17,23 @@ $(document).ready(function(){
  * read the API key from the file
  */
     $.getScript("/js/auth/apikey.js",function(){googleKey = mapsapikey});
-    if (navigator.geolocation) {
+    getGeolocation();
+});
+
+/**
+* get the geo location
+*/
+function getGeolocation()
+{
+     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(onLocationKnown);
     }
     else {
         $("#geolocationPar").text("Geolocation is not supported by this browser."   );
     }
-  });
+};
+
+  
   
   
   function loadMaps() {
@@ -73,7 +83,9 @@ function parseSpotList( spotList ){
     var parsedSpotlist = JSON.parse(spotList);
     $.each(parsedSpotlist, function(index, value) {
         $('#spotListTable').append('<tr><td>' + value.title + '</td><td>' + value.meta_info.distance_str + 
-        '</td><td> <input type="button" onclick=showRoute("' + value.link.params.id + '") value="Show route" /></tr>');
+        '</td><td> <input type="button" onclick=showRoute("' + value.link.params.id + '") value="Check In" /></tr>');
+        $("#geolocationPar").hide();
+        $("#spotList").show();
     });    
 };
 
@@ -87,6 +99,10 @@ function showRoute ( spotID ){
    * parameters: latitude and longitude
    * returns: list of spots
    */
+   $("#spotList").hide();
+   $("#spotListTable").html("");
+   
+   $("#routes").show();
     var url =  "http://" + config_serverAddress + "/routes/?spot_id=" + spotID;
     $.ajax({
        type: 'GET',
@@ -102,7 +118,7 @@ function showRoute ( spotID ){
 /**
 * callback function after requesting the routes for a spot
 */
-function onGetRoutes(data, textStatus, jqXHR) {    
+function onGetRoutes(data, textStatus, jqXHR) {  
     $("#routes").html("");
     // for each route
     $.each(data, function (routeIndex, routeValue) {
@@ -127,6 +143,8 @@ function selectRoute(routeID) {
    * returns: list of spots
    */
     var url =  "http://" + config_serverAddress + "/routes/" + routeID;
+    $("#routes").hide();
+    $("#map-canvas").show();
     $.ajax({
        type: 'GET',
        crossDomain:true,
@@ -218,11 +236,23 @@ function onMapsLoaded() {
         mapOptions);
     
     generateRoute();
-}
+};
 
 /*
 * load google maps
 */
 function loadMaps() {
   google.load("maps", "3", {"callback" : onMapsLoaded,"other_params" :"key=" + googleKey + "&sensor=true"});
-}
+};
+
+/**
+* restart the web-application
+*/
+function restart() {
+    getGeolocation();
+    $("#geolocationPar").show(),
+    $("#map-canvas").hide();
+    $("#routes").hide();
+    $("#spotlist").hide();
+    $("#spotlistTable").html("");
+};
