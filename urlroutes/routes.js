@@ -4,8 +4,8 @@
  */
 
 /**
- * Returns a list of Routes starting at a Spot
- * @param spot_id id of the starting Spot
+ * Returns a list of Routes starting or ending at a Spot
+ * @param spot_id id of the Spot
  * @return json representation of the Routes
  */
 exports.findRoutesStartingAtSpot = function (request, response) {
@@ -22,9 +22,15 @@ exports.findRoutesStartingAtSpot = function (request, response) {
         // find all routes which have item x as starting point.
         collection.find({ 'points.0': { item: parseInt(request.query.spot_id) } })
             .toArray(function (err, docs) {
-                // return the list of routes
-                response.send(docs);
+                // the list of routes starting at Spot is stored in the docs array
+                collection.find({ $where: 'this.points[this.points.length-1].item == ' + request.query.spot_id })
+                    .toArray(function (err, docs2) {
+                        // the list of routes ending at Spot is stored in the docs2 array
+                        // concat these arrays, and return the JSON.
+                        response.send(docs.concat(docs2));
+                    });
             });
+        
 
     }
     else {
@@ -109,21 +115,19 @@ exports.findById = function (request, response) {
  * Add a route to the mongoDB database
  * @param a list of ids of spots
  * @param a name for the route
+ * @param a description for the route
  @return the route id
  */
 exports.addRoute = function (request, response) {
     var mongojs = require('mongojs');
     var config = require('../auth/dbconfig');
     var db = mongojs(config.dbname);
-    var collection = db.collection(config.collection);
+    var collection = db.collection(config.collection);    
 
-    console.log(config.dbname + "," + config.collection);
-
-    collection.insert({"name":"Testroute", "points":[ 
-                                                   {"item": 33629},
-                                                   {"item": 7},
-                                                   {"item": 430},
-                                                   { "item": 134 }]
+    collection.insert({
+        "name": request.body.name,
+        "description": request.body.description,
+        "points": request.body.points
     }), function (err, docs) {
         response.send(" Route added");
     };
