@@ -38,8 +38,6 @@ exports.findSpotsByLatLong = function (request, response) {
         }, function (error, responselib, body) {
             var jsonResult = JSON.parse(body);
 
-            console.log(jsonResult);
-
             response.send(JSON.stringify(jsonResult.response.data.items));
         });
     }
