@@ -6,13 +6,13 @@
 /**
 * acquire geolocation
 */
+var googleKey = "";
 
-var globalMapsKey = "";
-$(document).ready(function(){
-    
-    $.getScript("./js/auth/apikey.js",function(){globalMapsKey = mapsapikey;});
-    
-    
+$(document).ready(function(){ 
+/**
+ * read the API key from the file
+ */
+    $.getScript("/js/auth/apikey.js",function(){googleKey = mapsapikey});
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(onLocationKnown);
     }
@@ -21,6 +21,18 @@ $(document).ready(function(){
     }
   });
   
+  
+  function loadMaps() {
+   var mapOptions = {  
+          center: new google.maps.LatLng(-34.397, 150.644),
+          zoom: 8,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        var map = new google.maps.Map(document.getElementById("map-canvas"),
+            mapOptions);
+}
+
+
 
 /**
 * callback function for the geolocation API
@@ -31,7 +43,7 @@ function onLocationKnown(position) {
    // send a request to the nodeJS API to acquire the nearby spots
    // parameters: latitude and longitude
    // returns: list of spots
-    var url =  "http://localhost:1337/spots?latitude=" + position.coords.latitude + "&longitude=" + position.coords.longitude;
+    var url =  "http://" + config_serverAddress + "/spots?latitude=" + position.coords.latitude + "&longitude=" + position.coords.longitude;
     $.ajax({
        type: 'GET',
        crossDomain:true,
@@ -71,7 +83,7 @@ function showRoute ( spotID ){
    * parameters: latitude and longitude
    * returns: list of spots
    */
-    var url =  "http://localhost:1337/routes/?spot_id=" + spotID;
+    var url =  "http://" + config_serverAddress + "/routes/?spot_id=" + spotID;
     $.ajax({
        type: 'GET',
        crossDomain:true,
@@ -110,7 +122,7 @@ function selectRoute(routeID) {
    * parameters: latitude and longitude
    * returns: list of spots
    */
-    var url =  "http://localhost:1337/routes/" + routeID;
+    var url =  "http://" + config_serverAddress + "/routes/" + routeID;
     $.ajax({
        type: 'GET',
        crossDomain:true,
@@ -127,6 +139,38 @@ function selectRoute(routeID) {
 * Callback function after receiving route information
 */
 function onGetRouteByID(data, textStatus, jqXHR) { 
+    showGoogleMaps();
     alert(data.name);
 };
+
+/**
+* show the route on a google maps view
+*/
+function showGoogleMaps(){
+   loadMaps();
+};
+
+
+/**
+* callback function after loading a map
+*/
+function onMapsLoaded() {
+  var mapOptions = {  
+          center: new google.maps.LatLng(-34.397, 150.644),
+          zoom: 8,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+    var map = new google.maps.Map(document.getElementById("map-canvas"),
+        mapOptions);
+}
+
+/*
+* load google maps
+*/
+function loadMaps() {
+  google.load("maps", "3", {"callback" : onMapsLoaded,"other_params" :"key=" + googleKey + "&sensor=true"});
+}
+
+
+
 

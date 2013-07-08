@@ -11,11 +11,15 @@
         <meta name="viewport" content="width=device-width">
 
         <link rel="stylesheet" href="css/normalize.min.css">
-        <link rel="stylesheet" href="css/main.css">
+        <link rel="stylesheet" href="css/main.css"> 
 
         <script src="js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+        <style>
+            html,body {height:100%;}
+            #map-canvas { height: 100% }
+        </style>
     </head>
-    <body>
+    <body style="height: 100%">
         <!--[if lt IE 7]>
             <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
         <![endif]-->
@@ -33,10 +37,10 @@
             </header>
         </div>
 
-        <div class="main-container">
-            <div class="main wrapper clearfix">
+        <div class="main-container" style="height: 100%" >
+            <div class="main wrapper clearfix"style="height: 100%">
 
-                <article>
+                <article style="height: 100%">
                     <header>
                         <h1>The Geolocation</h1>
                         <p id = "geolocationPar">a</p>
@@ -49,7 +53,10 @@
                         <div id="routes"/>
                     </section>
                     
+                    <section style="height: 100%">
+                    <div id="map-canvas" style="width: 100%; height: 100%"></div>
                     </section>
+                    
                     <footer>
      
                     </footer>
@@ -57,22 +64,24 @@
 
                 <aside>
                     <h3>aside</h3>
-                    <p>Text on the side.</p>
                 </aside>
 
             </div> <!-- #main -->
         </div> <!-- #main-container -->
+        
 
-        <div class="footer-container">
+     <!--   <div class="footer-container">
             <footer class="wrapper">
                 <h3>footer</h3>
             </footer>
-        </div>
+        </div>-->
 
 
+        <script src="js/auth/config.js"></script> 
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script> 
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.1.min.js"><\/script>')</script>
         <script src="js/socket.io/socket.io.js"></script>
+        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
         <script type="text/javascript" src="js/geo.js"/>
 
         <script src="js/main.js"></script>

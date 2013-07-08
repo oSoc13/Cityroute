@@ -224,3 +224,8 @@ pip-log.txt
 ## Api keys
 ##############
 clientpage/js/auth/apikey.js
+
+##############
+## Config Files
+##############
+clientpage/js/auth/config.js
