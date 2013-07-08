@@ -95,13 +95,44 @@ exports.findById = function (request, response) {
                     resultArray[spotsIdArray.indexOf(jsonResult.response.id)] = jsonResult;
                     // if all external API calls are returned, respond with the ordered JSON array.
                     // also included are the name and the id of the route.
-                    if (count == spotArray.length-1)
+                    if (count == spotArray.length - 1) {
+
+                        var gm = require('googlemaps');
+                        var util = require('util');
+
+                        var markers = [];
+                        var paths = [];
+                        var styles = [];
+                        var points = [];
+                        for (var j = 0; j < spotArray.length; ++j) {
+                            markers[j] = { 'location': resultArray[j].response.latitude + " " + resultArray[j].response.longitude };
+                            points[j] = resultArray[j].response.latitude + "," + resultArray[j].response.longitude;
+                        }
+                        paths[0] = { 'points': points };
+                  
+                        console.log(paths);
+
+                        
+
                         response.send(
                             {
                                 "name": docs.name,
                                 "id": docs._id,
-                                "spots": resultArray
-                            });
+                                "spots": resultArray,
+                                "png": gm.staticMap(
+                                    '',
+                                    '',
+                                    '500x400', 
+                                    false,
+                                    false,
+                                    'roadmap',
+                                    markers,
+                                    null,
+                                    paths)
+                            }
+                        )
+                        
+                    }
                     count++;
                     
                 });
