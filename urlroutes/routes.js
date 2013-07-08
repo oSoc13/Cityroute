@@ -31,8 +31,6 @@ exports.findRoutesStartingAtSpot = function (request, response) {
                         response.send(docs.concat(docs2));
                     });
             });
-        
-
     }
     else {
         // bad request

@@ -6,6 +6,7 @@
 var express = require("express");
 var utils = require("./utils");
 // bind spot requests to spots.js
+var users = require("./urlroutes/users");
 var spots = require("./urlroutes/spots");
 var routes = require("./urlroutes/routes");
 
@@ -17,6 +18,10 @@ app.all('/*', function (req, res, next) {
     res.header("Access-Control-Allow-Headers", "X-Requested-With");
     next();
 });
+
+// define the users API url routes.
+// requires a Base64 encoded representation of username:password
+app.get("/users/login/:base64", users.login);
 
 // define the spots API url routes.
 // requires latitude & longitude as url params

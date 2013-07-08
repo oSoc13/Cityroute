@@ -5,8 +5,10 @@
  * Contains the URI's to the CityLife API (not public)
  */
 
+var authenticationCall = "REPLACE WITH URI"
 var discoverChannelCall = "REPLACE WITH URI";
 var getSpotByIdCall = "REPLACE WITH URI";
 
+exports.authenticationCall = authenticationCall;
 exports.discoverChannelCall = discoverChannelCall;
 exports.getSpotByIdCall = getSpotByIdCall;
