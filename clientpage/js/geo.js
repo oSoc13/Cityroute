@@ -12,19 +12,13 @@ var dirService;
 var dirDisplay;
 var routeData;
 
-$(document).ready(function(){ 
-/**
- * read the API key from the file
- */
-    $.getScript("/js/auth/apikey.js",function(){googleKey = mapsapikey});
-    getGeolocation();
-});
 
 /**
 * get the geo location
 */
 function getGeolocation()
 {
+    $.getScript("/js/auth/apikey.js",function(){googleKey = mapsapikey});
      if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(onLocationKnown);
     }
