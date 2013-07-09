@@ -145,16 +145,14 @@ function onGetRoutes(data, textStatus, jqXHR) {
     // for each route
     $("#routes").append("<p><input type='button' value='Add new route' onclick='showRouteBuilder()'/></p>");
     if (data != "") {
-        $.each(data, function (routeIndex, routeValue) {
-            $("#routes").append("<table><th><td>Route " + routeValue.name + 
-                "</th><th><input type='button' value='Select Route' onclick=selectRoute('" + routeValue._id + "') /></th></tr>");
-            // for each spot
-            $.each(routeValue.points, function(spotIndex, spotValue) {
-                $("#routes").append("<tr><td>Spot:  " + spotValue.item + "</td></tr>");
-            });
-            $("#routes").append("</table>");
-        });
+        $.each(data, addRouteInformation);
     }
+};
+
+function addRouteInformation(index, value) {
+    var html = " <div class='routeinfo' > " + value.name + "<br />" + value.description + 
+                "<br /><img onclick=selectRoute('" + value._id + "') src='" + value.png + "' width='150' height= '150'/>";
+    $("#routes").append(html);
 };
 
 /**

@@ -395,3 +395,12 @@ nav a:hover {
         page-break-after: avoid;
     }
 }
+
+/* custom CSS */
+
+.routeinfo {
+    margin: 20px;
+    float:left;
+    width: 240px;
+    align: center;
+};
