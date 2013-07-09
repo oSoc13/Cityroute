@@ -26,9 +26,6 @@ function getGeolocation()
         $("#geolocationPar").text("Geolocation is not supported by this browser."   );
     }
 };
-
-  
-  
   
   function loadMaps() {
    var mapOptions = {  
@@ -54,6 +51,7 @@ function onLocationKnown(position) {
        type: 'GET',
        crossDomain:true,
         url: url,
+        cache: false,
         success: onGetSpots,
         error: function(jqXHR, errorstatus, errorthrown) {
            alert("Error: " + errorstatus);
@@ -73,11 +71,17 @@ function onGetSpots(data, textStatus, jqXHR) {
 */
 function parseSpotList( spotList ){
     var parsedSpotlist = JSON.parse(spotList);
+    
+    // clear the list of spots for the routebuilder
+    routeBuilderClearSpots();
     $.each(parsedSpotlist, function(index, value) {
         $('#spotListTable').append('<tr><td>' + value.title + '</td><td>' + value.meta_info.distance_str + 
         '</td><td> <input type="button" onclick=checkIn("' + value.link.params.id + '") value="Check In" /></tr>');
         $("#geolocationPar").hide();
         $("#spotList").show();
+        
+        // add the spots to the routebuilder
+        routeBuilderAddSpot(value);
     });    
 };
 
@@ -91,6 +95,7 @@ function checkIn( spotID ) {
        type: 'GET',
        crossDomain:true,
         url: url,
+        cache: false,
         success: onCheckedIn,
         error: function(jqXHR, errorstatus, errorthrown) {
            alert("Error: " + errorstatus);
@@ -121,8 +126,9 @@ function showRoute ( spotID ){
    $("#routes").show();
     var url =  "http://" + config_serverAddress + "/routes/?spot_id=" + spotID;
     $.ajax({
-       type: 'GET',
-       crossDomain:true,
+        type: 'GET',
+        crossDomain:true,
+        cache: false,
         url: url,
         success: onGetRoutes,
         error: function(jqXHR, errorstatus, errorthrown) {
@@ -137,15 +143,18 @@ function showRoute ( spotID ){
 function onGetRoutes(data, textStatus, jqXHR) {  
     $("#routes").html("");
     // for each route
-    $.each(data, function (routeIndex, routeValue) {
-        $("#routes").append("<table><th><td>Route " + routeValue.name + 
-            "</th><th><input type='button' value='Select Route' onclick=selectRoute('" + routeValue._id + "') /></th></tr>");
-        // for each spot
-        $.each(routeValue.points, function(spotIndex, spotValue) {
-            $("#routes").append("<tr><td>Spot:  " + spotValue.item + "</td></tr>");
+    $("#routes").append("<p><input type='button' value='Add new route' onclick='showRouteBuilder()'/></p>");
+    if (data != "") {
+        $.each(data, function (routeIndex, routeValue) {
+            $("#routes").append("<table><th><td>Route " + routeValue.name + 
+                "</th><th><input type='button' value='Select Route' onclick=selectRoute('" + routeValue._id + "') /></th></tr>");
+            // for each spot
+            $.each(routeValue.points, function(spotIndex, spotValue) {
+                $("#routes").append("<tr><td>Spot:  " + spotValue.item + "</td></tr>");
+            });
+            $("#routes").append("</table>");
         });
-        $("#routes").append("</table>");
-    });
+    }
 };
 
 /**
@@ -165,6 +174,7 @@ function selectRoute(routeID) {
        type: 'GET',
        crossDomain:true,
         url: url,
+        cache: false,
         success: onGetRouteByID,
         cache: false,
         error: function(jqXHR, errorstatus, errorthrown) {
@@ -254,7 +264,7 @@ function onMapsLoaded() {
     generateRoute();
 };
 
-/*
+/**
 * load google maps
 */
 function loadMaps() {
@@ -272,3 +282,5 @@ function restart() {
     $("#spotlist").hide();
     $("#spotlistTable").html("");
 };
+
+

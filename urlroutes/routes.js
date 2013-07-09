@@ -21,7 +21,8 @@ exports.findRoutesStartingAtSpot = function (request, response) {
     if (typeof request.query.spot_id !== undefined) {   
         var spot_id_safe = parseInt(request.query.spot_id);
         // find all routes which have item x as starting point.
-        collection.find({ 'points.0': { item: parseInt(request.query.spot_id) } })
+        //console.log(request.query.spot_id);
+        collection.find({ 'points.0': { item: request.query.spot_id } })
             .toArray(function (err, docs) {
                 // the list of routes starting at Spot is stored in the docs array
                 collection.find({ $where: 'this.points[this.points.length-1].item == ' + spot_id_safe })
@@ -76,7 +77,7 @@ exports.findById = function (request, response) {
 
             // create a basic array (with no JSON content) containing the spot urls in the right order
             for (var i = 0; i < spotArray.length; ++i) {
-                spotsIdArray[i] = spotArray[i].item
+                spotsIdArray[i] = parseInt(spotArray[i].item);
             }
 
             // for each spot, do a query to the CityLife API for more info about that spot
@@ -115,7 +116,7 @@ parseRouteSpots = function (error, responselib, body, resultArray, spotArray, sp
     var jsonResult = JSON.parse(body);
 
     // insert the results in the correct order as they are defined by a route.
-    resultArray[spotsIdArray.indexOf(jsonResult.response.id)] = jsonResult;
+    resultArray[spotsIdArray.indexOf(parseInt(jsonResult.response.id))] = jsonResult;
     // if all external API calls are returned, respond with the ordered JSON array.
     // also included are the name and the id of the route.
     if (count == spotArray.length - 1) {
@@ -220,7 +221,7 @@ exports.addRoute = function (request, response) {
     var config = require('../auth/dbconfig');
     var db = mongojs(config.dbname);
     var collection = db.collection(config.collection);    
-
+    console.log(JSON.stringify(request.body.points));
     collection.insert({
         "name": request.body.name,
         "description": request.body.description,

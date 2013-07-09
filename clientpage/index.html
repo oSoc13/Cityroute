@@ -28,7 +28,7 @@
             <header class="wrapper clearfix">
                 <h1 class="title">CityRoute</h1>
                 <nav>
-                    <ul>
+                    <ul style="list-style-type: none;">
                         <!--<li><a href="#">Check In</a></li>-->
                         <li id= "loginLink"><a href="#" onclick="logOut();">Log Out</a></li>
                     </ul>
@@ -49,7 +49,7 @@
                     <div id = "login">
                         <form>
                         <table>
-                        <tr><td>Username</td><td><input id="username" type = "text"/> </td></tr>
+                        <tr><td>Username</td><td><input id="username" type = "email"/> </td></tr>
                         <tr><td>Password</td><td><input id="password" type = "password"/> </td></tr>
                         <tr><td><input type="button" value="Log In" onclick="loginuser()"/></td></tr>
                         </table>
@@ -58,6 +58,11 @@
                     
                     <section>
                         <div id="routes"/>
+                    </section>
+                    <section>
+                        <div data-role="content" data-theme="c" id="routeBuilder">
+                            <ul data-role="listview" data-inset="true" data-theme="d" id="sortable"/>
+                        </div>
                     </section>
                     
                     <section style="height: 100%">
@@ -78,9 +83,22 @@
         <script src="js/socket.io/socket.io.js"></script>
         <script type="text/javascript" src="https://www.google.com/jsapi"></script>
         <script type="text/javascript" src="js/geo.js"></script>
+        <script type="text/javascript" src="js/routebuilder.js"></script>
         <script type="text/javascript" src="js/loginscript.js"></script>
         <script type="text/javascript" src="js/jquery.base64.js"></script>
         <script type="text/javascript" src="js/jquery.cookie.js"></script>
+        <script type="text/javascript" src="js/jquery-ui-1.10.3.custom.min.js"></script>
+        <script type="text/javascript" src="js/jquery.ui.touch-punch.min.js"></script>
+        
+        <script src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.js"></script>
+        <script>
+            $( "#sortable" ).sortable();
+            $( "#sortable" ).disableSelection();
+            <!-- Refresh list to the end of sort to have a correct display -->
+            $( "#sortable" ).bind( "sortstop", function(event, ui) {
+              $('#sortable').listview('refresh');
+            });
+        </script>
 
         <script src="js/main.js"></script>
         

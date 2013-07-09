@@ -10,6 +10,7 @@ $(document).ready( function() {
         $("#geolocationPar").show();
         getGeolocation();
         $("#loginLink").show();
+        $("#routeBuilder").hide();
         }
     // User is not logged in
     else {
@@ -17,6 +18,7 @@ $(document).ready( function() {
         $("#map-canvas").hide();
         $("#routes").hide();
         $("#spotlist").hide();
+        $("#routeBuilder").hide();
         $("#spotlistTable").html("");
         $("#login").show();
         $("#loginLink").hide();
