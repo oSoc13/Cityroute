@@ -15,6 +15,7 @@ exports.findSpotsByLatLong = function (request, response) {
     var querystring = require('querystring');
     var requestlib = require('request');
     var citylife = require('../auth/citylife');
+    var gm = require('googlemaps');
 
     // check for url parameters, lat and long should be defined.
     if (typeof request.query.latitude !== undefined && typeof request.query.longitude !== undefined) {
@@ -37,6 +38,22 @@ exports.findSpotsByLatLong = function (request, response) {
             }
         }, function (error, responselib, body) {
             var jsonResult = JSON.parse(body);
+
+            var markers = [];
+            for (var i = 0; i < jsonResult.response.data.items.length; ++i) {
+                markers[0] = { 'location': jsonResult.response.data.items[i].meta_info.latitude + " " + jsonResult.response.data.items[i].meta_info.longitude };
+                jsonResult.response.data.items[i].mapspng = gm.staticMap(
+                    '',
+                    15,
+                    '250x250',
+                    false,
+                    false,
+                    'roadmap',
+                    markers,
+                    null,
+                    null);
+            }
+            
 
             response.send(JSON.stringify(jsonResult.response.data.items));
         });
