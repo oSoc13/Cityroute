@@ -278,6 +278,8 @@ function restart() {
     $("#map-canvas").hide();
     $("#routes").hide();
     $("#spotlist").hide();
+    $("#routeBuilder").hide();
+    $("#sortableInput").html("");
     $("#spotlistTable").html("");
 };
 
