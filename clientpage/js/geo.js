@@ -79,9 +79,8 @@ function parseSpotList( spotList ){
         '</td><td> <input type="button" onclick=checkIn("' + value.link.params.id + '") value="Check In" /></tr>');
         $("#geolocationPar").hide();
         $("#spotList").show();
-        
-        // add the spots to the routebuilder
         routeBuilderAddSpot(value);
+
     });    
 };
 
@@ -101,6 +100,7 @@ function checkIn( spotID ) {
            alert("Error: " + errorstatus);
         }
     });
+    routeBuilderSetFirstSpot(spotID);
 };
 
 /**
