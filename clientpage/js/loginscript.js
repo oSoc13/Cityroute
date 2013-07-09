@@ -4,11 +4,14 @@
 */
 
 $(document).ready( function() {
+    // User logged in
     if ($.cookie("token") != null) {
         $("#login").hide();
         $("#geolocationPar").show();
         getGeolocation();
+        $("#loginLink").show();
         }
+    // User is not logged in
     else {
         $("#geolocationPar").hide(),
         $("#map-canvas").hide();
@@ -16,6 +19,7 @@ $(document).ready( function() {
         $("#spotlist").hide();
         $("#spotlistTable").html("");
         $("#login").show();
+        $("#loginLink").hide();
      }
 });
 
@@ -42,4 +46,9 @@ function onLoggedIn(data, textStatus, jqXHR) {
     }
     else
         alert("Incorrect username or password");
+};
+
+function logOut() {
+    $.removeCookie("token");
+    location.reload();    
 };
