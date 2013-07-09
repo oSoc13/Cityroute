@@ -13,9 +13,9 @@ var routes = require("./urlroutes/routes");
 var app = express();
 app.use(express.bodyParser());
 
-process.on('uncaughtException', function (exception) {
+/*process.on('uncaughtException', function (exception) {
     console.log(exception);
-});
+});*/
 
 app.all('/*', function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");

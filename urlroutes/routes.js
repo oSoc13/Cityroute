@@ -29,7 +29,10 @@ exports.findRoutesStartingAtSpot = function (request, response) {
                     .toArray(function (err, docs2) {
                         // the list of routes ending at Spot is stored in the docs2 array
                         // concat these arrays, and return the JSON.
-                        response.send(docs.concat(docs2));
+                        var resultDocs = docs;
+                        resultDocs.concat(docs2);
+
+                        response.send(resultDocs);
                     });
             });
     }
@@ -48,6 +51,13 @@ exports.findRoutesStartingAtSpot = function (request, response) {
  * @return json representation of the Route
  */
 exports.findById = function (request, response) {
+    var mongojs = require('mongojs');
+    var ObjectId = mongojs.ObjectId;
+    searchById(ObjectId(request.params.id), response, true);
+}
+
+searchById = function(id, response, returnResponse)
+{
     var utils = require("../utils");
     var mongojs = require('mongojs');
     var config = require('../auth/dbconfig');
@@ -58,10 +68,10 @@ exports.findById = function (request, response) {
 
     var db = mongojs(config.dbname);
     var collection = db.collection(config.collection);
-    var ObjectId = mongojs.ObjectId;
+    
 
     // find the route by its id.
-    collection.find({ '_id': ObjectId(request.params.id) })
+    collection.find({ '_id': id })
         .forEach(function (err, docs) {
             if (!docs) {
                 // we visited all docs in the collection
@@ -89,7 +99,7 @@ exports.findById = function (request, response) {
                         'Content-Type': 'application/x-www-form-urlencoded'
                     }
                 }, function (error, responselib, body) {
-                    parseRouteSpots(error, responselib, body, resultArray, spotArray, spotsIdArray, count, docs, response);
+                    parseRouteSpots(error, responselib, body, resultArray, spotArray, spotsIdArray, count, docs, response, returnResponse);
                     count++;
                 });
             }
@@ -108,7 +118,7 @@ exports.findById = function (request, response) {
  * @param docs result of the route query in mongoDB
  * @param response used to create a response to the client
  */
-parseRouteSpots = function (error, responselib, body, resultArray, spotArray, spotsIdArray, count, docs, response) {
+parseRouteSpots = function (error, responselib, body, resultArray, spotArray, spotsIdArray, count, docs, response, returnResponse) {
     var requestlib = require('request');
     var gm = require('googlemaps');
 
@@ -161,7 +171,7 @@ parseRouteSpots = function (error, responselib, body, resultArray, spotArray, sp
                 null),
             method: "GET"
         }, function (error, responselib, body) {
-            parseDirectionResults(error, responselib, body, resultArray, markers, docs, response);
+            parseDirectionResults(error, responselib, body, resultArray, markers, docs, response, returnResponse);
         });
     }
 }
@@ -176,9 +186,14 @@ parseRouteSpots = function (error, responselib, body, resultArray, spotArray, sp
  * @param docs result of the route query in mongoDB
  * @param response used to create a response to the client
  */
-parseDirectionResults = function (error, responselib, body, resultArray, markers, docs, response) {
+parseDirectionResults = function (error, responselib, body, resultArray, markers, docs, response, returnResponse) {
     var polyline = require('polyline');
     var gm = require('googlemaps');
+    var config = require('../auth/dbconfig');
+    var mongojs = require('mongojs');
+
+    var db = mongojs(config.dbname);
+    var collection = db.collection(config.collection);
 
     var jsonResult = JSON.parse(body);
 
@@ -188,23 +203,47 @@ parseDirectionResults = function (error, responselib, body, resultArray, markers
     paths[0] = { 'points': points };
 
     // send the response to the user, it contains a link to a static png with a map view on Google Maps
-    response.send(
-        {
-            "name": docs.name,
-            "id": docs._id,
-            "spots": resultArray,
-            "png": gm.staticMap(
-                '',
-                '',
-                '250x250',
-                false,
-                false,
-                'roadmap',
-                markers,
-                null,
-                paths)
-        }
-    )
+    if (returnResponse) {
+        response.send(
+            {
+                "name": docs.name,
+                "id": docs._id,
+                "spots": resultArray,
+                "png": docs.png
+            }
+        );
+    }
+    else {
+        var db = mongojs(config.dbname);
+        var collection = db.collection(config.collection);
+        var ObjectId = mongojs.ObjectId;
+
+        collection.update(
+            { '_id': docs._id },
+            {
+                $set: {
+                    'png': gm.staticMap(
+                        '',
+                        '',
+                        '250x250',
+                        false,
+                        false,
+                        'roadmap',
+                        markers,
+                        null,
+                        paths)
+                }},
+            { multi: true},
+            function(err, docs2) {
+                response.send(
+                {
+                    "name": docs2.name,
+                    "id": docs2._id,
+                    "spots": resultArray,
+                    "png": docs2.png
+                });
+            });
+    }
 }
 
 
@@ -227,6 +266,7 @@ exports.addRoute = function (request, response) {
         "description": request.body.description,
         "points": request.body.points
     }, function (err, docs) {
-        response.send(JSON.stringify(docs));
+        searchById(docs[0]._id, response, false);
+        //response.send(JSON.stringify(docs));
     });
 };
