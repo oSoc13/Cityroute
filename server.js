@@ -32,6 +32,7 @@ app.get("/users/login/:base64", users.login);
 app.get("/spots", spots.findSpotsByLatLong);
 // requires id
 app.get("/spots/checkin", spots.checkIn);
+app.get("/spots/relevant", spots.findRelevantSpots);
 app.get("/spots/:id", spots.findById);
 
 // define the routes API url routes.

@@ -3,6 +3,56 @@
  * @copyright: OKFN Belgium
  */
 
+
+exports.findRelevantSpots = function (request, response) {
+    var utils = require('../utils');
+    var https = require('https');
+    var querystring = require('querystring');
+    var requestlib = require('request');
+    var citylife = require('../auth/citylife');
+    var gm = require('googlemaps');
+
+    // check for url parameters; lat, long and token should be defined.
+    if (typeof request.query.latitude !== undefined && typeof request.query.longitude !== undefined && typeof request.query.token !== undefined) {
+
+        // date time is also required for the City Life API, so get it in the right format
+        var time = new Date();
+        var now = "" + time.getFullYear() + "-" + utils.addZero(time.getMonth()) + "-" + utils.addZero(time.getDay()) + " " + utils.addZero(time.getHours()) + ":" + utils.addZero(time.getMinutes()) + ":" + utils.addZero(time.getSeconds());
+
+        requestlib({
+            uri: citylife.discoverCall,
+            method: "POST",
+            form: {
+                "bearer_token": request.query.token,
+                "longitude": request.query.longitude,
+                "latitude": request.query.latitude,
+                "time": "" + now
+            },
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }, function (error, responselib, body) {
+            var jsonResult = JSON.parse(body);
+            
+            var markers = [];
+            for (var i = 0; i < jsonResult.response.data.items.length; ++i) {
+                markers[0] = { 'location': jsonResult.response.data.items[i].meta_info.latitude + " " + jsonResult.response.data.items[i].meta_info.longitude };
+                jsonResult.response.data.items[i].mapspng = gm.staticMap(
+                    '',
+                    15,
+                    '250x250',
+                    false,
+                    false,
+                    'roadmap',
+                    markers,
+                    null,
+                    null);
+            }
+            response.send(JSON.stringify(jsonResult.response.data.items));
+        });
+    }
+}
+
 /**
  * Returns a list of nearby Spots.
  * @param latitude the latitude of the location
