@@ -196,7 +196,7 @@ parseDirectionResults = function (error, responselib, body, resultArray, markers
             "png": gm.staticMap(
                 '',
                 '',
-                '500x400',
+                '250x250',
                 false,
                 false,
                 'roadmap',
