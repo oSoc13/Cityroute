@@ -237,10 +237,19 @@ parseDirectionResults = function (error, responselib, body, resultArray, markers
             function(err, docs2) {
                 response.send(
                 {
-                    "name": docs2.name,
-                    "id": docs2._id,
+                    "name": docs.name,
+                    "id": docs._id,
                     "spots": resultArray,
-                    "png": docs2.png
+                    "png": gm.staticMap(
+                        '',
+                        '',
+                        '250x250',
+                        false,
+                        false,
+                        'roadmap',
+                        markers,
+                        null,
+                        paths)
                 });
             });
     }
