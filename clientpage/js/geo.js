@@ -191,8 +191,9 @@ function restart() {
     $("#spotlist").hide();
     $("#routeBuilder").hide();
     $("#sortableInput").html("");
-    $("#spotlistTable").html("");
+    $("#spotListTable").html("");
     $("#suggestions").html("");
+    window.clearInterval(taskID);
 };
 
 

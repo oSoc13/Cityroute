@@ -8,6 +8,7 @@
 
 var googleMap;
 var myMarker;
+var taskID;
 
 
 
@@ -85,11 +86,12 @@ function generateRoute( ) {
 function onRouteCalculated (directionsResult, directionsStatus){
     dirDisplay.setDirections(directionsResult);
     
-    window.setInterval(function(){
-        navigator.geolocation.getCurrentPosition( function (position) {
-            var latLong = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-            myMarker.setPosition(latLong);    
-        });
+    window.clearInterval(taskID);
+    taskID = window.setInterval(function(){
+            navigator.geolocation.getCurrentPosition( function (position) {
+                var latLong = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                myMarker.setPosition(latLong);    
+            });
     },3000);
 };
 
