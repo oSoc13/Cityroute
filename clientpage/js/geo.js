@@ -257,8 +257,7 @@ function onMapsLoaded() {
           zoom: 8,
           mapTypeId: google.maps.MapTypeId.ROADMAP
         };
-    googleMap = new google.maps.Map(document.getElementById("map-canvas"),
-        mapOptions);
+    googleMap = new google.maps.Map(document.getElementById("map-canvas"),mapOptions);
     
     generateRoute();
 };
