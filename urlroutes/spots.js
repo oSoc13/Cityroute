@@ -10,7 +10,7 @@ exports.findRelevantSpots = function (request, response) {
     var querystring = require('querystring');
     var requestlib = require('request');
     var citylife = require('../auth/citylife');
-    var gm = require('googlemaps');
+    var gm = require('../lib/googlemaps');
 
     // check for url parameters; lat, long and token should be defined.
     if (typeof request.query.latitude !== undefined && typeof request.query.longitude !== undefined && typeof request.query.token !== undefined) {
@@ -65,7 +65,7 @@ exports.findSpotsByLatLong = function (request, response) {
     var querystring = require('querystring');
     var requestlib = require('request');
     var citylife = require('../auth/citylife');
-    var gm = require('googlemaps');
+    var gm = require('../lib/googlemaps');
 
     // check for url parameters, lat and long should be defined.
     if (typeof request.query.latitude !== undefined && typeof request.query.longitude !== undefined) {
@@ -153,7 +153,7 @@ exports.checkIn = function (request, response) {
             }
         }, function (error, responselib, body) {
             if (typeof body !== undefined && typeof body.response !== undefined)
-            body.response.data.spot_id = request.query.spot_id;
+                body.response.data.spot_id = request.query.spot_id;
             response.send(body);
             
         });
@@ -201,9 +201,9 @@ exports.search = function (request, response) {
                 'Content-Type': 'application/json'
             }
         }, function (error, responselib, body) {
-            if (typeof body !== undefined && typeof body.response !== undefined)
-                body.response.data.spot_id = request.query.spot_id;
-            response.send(body.response.data.items);
+            var jsonResult = body;
+
+            response.send(jsonResult.response.data.items);
 
         });
     }
