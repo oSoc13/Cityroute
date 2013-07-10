@@ -164,6 +164,56 @@ exports.checkIn = function (request, response) {
 };
 
 /**
+ * Search for spots
+ * @param token the user's bearer_token
+ * @param latitude latitude of the user
+ * @param longitude longitude of the user
+ * @param search_term searchterm
+ * @return something
+ */
+exports.search = function (request, response) {
+    var utils = require("../utils");
+    var https = require('https');
+    var querystring = require('querystring');
+    var requestlib = require('request');
+    var citylife = require('../auth/citylife');
+
+    // check for url parameters, lat and long should be defined.
+    if (typeof request.query.token !== undefined && typeof request.query.latitude !== undefined && typeof request.query.longitude !== undefined && typeof request.query.search_term !== undefined) {
+
+        // date time is also required for the City Life API, so get it in the right format
+        var time = new Date();
+        var now = "" + time.getFullYear() + "-" + utils.addZero(time.getMonth()) + "-" + utils.addZero(time.getDay()) + " " + utils.addZero(time.getHours()) + ":" + utils.addZero(time.getMinutes()) + ":" + utils.addZero(time.getSeconds());
+
+        requestlib({
+            uri: citylife.channelCall,
+            method: "POST",
+            json: {
+                "bearer_token": request.query.token,
+                "params": '{ "term": "' + request.query.search_term + '"}',
+                "latitude": request.query.latitude,
+                "longitude": request.query.longitude,
+                "channel": "spots",
+                "view": "SearchResults",
+                "time": "" + now
+            },
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }, function (error, responselib, body) {
+            if (typeof body !== undefined && typeof body.response !== undefined)
+                body.response.data.spot_id = request.query.spot_id;
+            response.send(body.response.data.items);
+
+        });
+    }
+    else {
+        // bad request
+    }
+};
+
+
+/**
  * Returns the details of a Spot.
  * @param id the id of the Spot
  * @return json representation of the Spot

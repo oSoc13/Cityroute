@@ -33,6 +33,7 @@ app.get("/spots", spots.findSpotsByLatLong);
 // requires id
 app.get("/spots/checkin", spots.checkIn);
 app.get("/spots/relevant", spots.findRelevantSpots);
+app.get("/spots/search", spots.search);
 app.get("/spots/:id", spots.findById);
 
 // define the routes API url routes.
