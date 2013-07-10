@@ -14,13 +14,9 @@ A Node.js server with the following packages installed:
 * Polyline
 * Querystring
 
+These can all be installed by just running the following command from the source folder.
 <pre>
-npm install express
-npm install mongodb
-npm install mongojs
-npm install request
-npm install polyline
-npm install querystring</pre>
+npm install</pre>
 
 The GoogleMaps package is included in the lib folder due to some changes to its source code.
 
