@@ -57,4 +57,29 @@ Requires *token*, *latitude* and *longitude* as URL parameters.
 * GET /spots/search
 
 Returns a list of spots relevant to a user and his location when provided with a search term.
-Requires *token*, *latitude*, *longitude* and *search_term* as URL parameters. 
+Requires *token*, *latitude*, *longitude* and *search_term* as URL parameters.
+
+Routes
+------
+There are 3 calls possible to the Routes API
+* GET /routes
+
+Returns a list of Routes starting or ending a a specific spot including a static Google Maps PNG representation.
+Requires *spot_id* as URL parameter.
+* GET /routes/:id
+
+Returns the details of a Route, including detailed information about every Spot on the route.
+*:id* should be the Route id as included in the json results of a GET or POST to /routes.
+* POST /routes
+
+Adds a route to the database and generates a static Google Maps png representation.
+Requires form data in a json format, for example:
+    {
+        'name':'Example Route',
+        'description':'A simple description',
+        'points':
+        [
+            {'item':'137'},
+            {'item':'7'}
+        ]
+    }
