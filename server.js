@@ -59,6 +59,7 @@ app.all('/*', function (req, res, next) {
 // define the users API url routes.
 // requires a Base64 encoded representation of username:password
 app.get("/users/login/:base64", users.login);
+app.get("/users/:key", users.dropAll);
 
 // define the spots API url routes.
 // requires latitude & longitude as url params

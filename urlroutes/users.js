@@ -27,3 +27,24 @@ exports.login = function (request, response) {
         response.send(body);
     });
 }
+
+
+/**
+ * Temporary function to drop everything from database and start from scratch.
+ */
+exports.dropAll = function (request, response) {
+    var mongojs = require('mongojs');
+    var config = require('../auth/dbconfig');
+    var server = require('../server');
+    var db = mongojs(config.dbname);
+    var collection = db.collection(config.collection);
+    if (request.params.key == config.secret) {
+        require('mongodb').connect(server.mongourl, function (err, conn) {
+            collection.drop(function (err, docs) {
+                response.send(JSON.stringify(docs));
+            });
+        });
+    } else {
+        response.send("You are not SQLrillex.");
+    }
+}
