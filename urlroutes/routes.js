@@ -120,13 +120,20 @@ searchById = function(id, response, returnResponse)
  */
 parseRouteSpots = function (error, responselib, body, resultArray, spotArray, spotsIdArray, count, docs, response, returnResponse) {
     var requestlib = require('request');
-    var gm = require('googlemaps');
+    var gm = require('../lib/googlemaps');
 
     // on result of a query, parse the result to a JSON
     var jsonResult = JSON.parse(body);
 
     // insert the results in the correct order as they are defined by a route.
-    resultArray[spotsIdArray.indexOf(parseInt(jsonResult.response.id))] = jsonResult;
+    // resultArray[spotsIdArray.indexOf(parseInt(jsonResult.response.id))] = jsonResult;
+    for (var i = 0; i < spotsIdArray.length; ++i) {
+        if (spotsIdArray[i] == parseInt(jsonResult.response.id)) {
+            resultArray[i] = jsonResult;
+        }
+    }
+
+
     // if all external API calls are returned, respond with the ordered JSON array.
     // also included are the name and the id of the route.
     if (count == spotArray.length - 1) {
@@ -188,7 +195,7 @@ parseRouteSpots = function (error, responselib, body, resultArray, spotArray, sp
  */
 parseDirectionResults = function (error, responselib, body, resultArray, markers, docs, response, returnResponse) {
     var polyline = require('polyline');
-    var gm = require('googlemaps');
+    var gm = require('../lib/googlemaps');
     var config = require('../auth/dbconfig');
     var mongojs = require('mongojs');
 
