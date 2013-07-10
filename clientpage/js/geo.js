@@ -281,6 +281,7 @@ function restart() {
     $("#routeBuilder").hide();
     $("#sortableInput").html("");
     $("#spotlistTable").html("");
+    $("#suggestions").html("");
 };
 
 
