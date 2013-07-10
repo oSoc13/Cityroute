@@ -44,6 +44,7 @@ local.properties
 *.njsproj
 auth/citylife.js
 auth/dbconfig.js
+node_modules/*
 
 # Build results
 

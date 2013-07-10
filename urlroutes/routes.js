@@ -13,6 +13,7 @@ exports.findRoutesStartingAtSpot = function (request, response) {
     var querystring = require('querystring');
     var mongojs = require('mongojs');
     var config = require('../auth/dbconfig');
+    var server = require('../server');
 
     var db = mongojs(config.dbname);
     var collection = db.collection(config.collection);
@@ -22,19 +23,21 @@ exports.findRoutesStartingAtSpot = function (request, response) {
         var spot_id_safe = parseInt(request.query.spot_id);
         // find all routes which have item x as starting point.
         //console.log(request.query.spot_id);
-        collection.find({ 'points.0': { item: request.query.spot_id } })
-            .toArray(function (err, docs) {
-                // the list of routes starting at Spot is stored in the docs array
-                collection.find({ $where: 'this.points[this.points.length-1].item == ' + spot_id_safe })
-                    .toArray(function (err, docs2) {
-                        // the list of routes ending at Spot is stored in the docs2 array
-                        // concat these arrays, and return the JSON.
-                        var resultDocs = docs;
-                        resultDocs.concat(docs2);
+        require('mongodb').connect(server.mongourl, function (err, conn) {
+            collection.find({ 'points.0': { item: request.query.spot_id } })
+                .toArray(function (err, docs) {
+                    // the list of routes starting at Spot is stored in the docs array
+                    collection.find({ $where: 'this.points[this.points.length-1].item == ' + spot_id_safe })
+                        .toArray(function (err, docs2) {
+                            // the list of routes ending at Spot is stored in the docs2 array
+                            // concat these arrays, and return the JSON.
+                            var resultDocs = docs;
+                            resultDocs.concat(docs2);
 
-                        response.send(resultDocs);
-                    });
-            });
+                            response.send(resultDocs);
+                        });
+                });
+        });
     }
     else {
         // bad request
@@ -65,45 +68,48 @@ searchById = function(id, response, returnResponse)
     var querystring = require('querystring');
     var https = require('https');
     var requestlib = require('request');
+    var server = require('../server');
 
     var db = mongojs(config.dbname);
     var collection = db.collection(config.collection);
     
 
     // find the route by its id.
-    collection.find({ '_id': id })
-        .forEach(function (err, docs) {
-            if (!docs) {
-                // we visited all docs in the collection
-                return;
-            }
+    require('mongodb').connect(server.mongourl, function (err, conn) {
+        collection.find({ '_id': id })
+            .forEach(function (err, docs) {
+                if (!docs) {
+                    // we visited all docs in the collection
+                    return;
+                }
 
-            // this contains the JSON array with spots
-            var spotArray = docs.points;
-            // initialize parse variables
-            var count = 0;
-            var resultArray = [];
-            var spotsIdArray = [];
+                // this contains the JSON array with spots
+                var spotArray = docs.points;
+                // initialize parse variables
+                var count = 0;
+                var resultArray = [];
+                var spotsIdArray = [];
 
-            // create a basic array (with no JSON content) containing the spot urls in the right order
-            for (var i = 0; i < spotArray.length; ++i) {
-                spotsIdArray[i] = parseInt(spotArray[i].item);
-            }
+                // create a basic array (with no JSON content) containing the spot urls in the right order
+                for (var i = 0; i < spotArray.length; ++i) {
+                    spotsIdArray[i] = parseInt(spotArray[i].item);
+                }
 
-            // for each spot, do a query to the CityLife API for more info about that spot
-            for (var i = 0; i < spotArray.length; ++i) {
-                requestlib({
-                    uri: citylife.getSpotByIdCall + spotArray[i].item,
-                    method: "GET",
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    }
-                }, function (error, responselib, body) {
-                    parseRouteSpots(error, responselib, body, resultArray, spotArray, spotsIdArray, count, docs, response, returnResponse);
-                    count++;
-                });
-            }
-        });
+                // for each spot, do a query to the CityLife API for more info about that spot
+                for (var i = 0; i < spotArray.length; ++i) {
+                    requestlib({
+                        uri: citylife.getSpotByIdCall + spotArray[i].item,
+                        method: "GET",
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        }
+                    }, function (error, responselib, body) {
+                        parseRouteSpots(error, responselib, body, resultArray, spotArray, spotsIdArray, count, docs, response, returnResponse);
+                        count++;
+                    });
+                }
+            });
+    });
 };
 
 /**
@@ -198,6 +204,7 @@ parseDirectionResults = function (error, responselib, body, resultArray, markers
     var gm = require('../lib/googlemaps');
     var config = require('../auth/dbconfig');
     var mongojs = require('mongojs');
+    var server = require('../server');
 
     var db = mongojs(config.dbname);
     var collection = db.collection(config.collection);
@@ -225,40 +232,43 @@ parseDirectionResults = function (error, responselib, body, resultArray, markers
         var collection = db.collection(config.collection);
         var ObjectId = mongojs.ObjectId;
 
-        collection.update(
-            { '_id': docs._id },
-            {
-                $set: {
-                    'png': gm.staticMap(
-                        '',
-                        '',
-                        '250x250',
-                        false,
-                        false,
-                        'roadmap',
-                        markers,
-                        null,
-                        paths)
-                }},
-            { multi: true},
-            function(err, docs2) {
-                response.send(
+        require('mongodb').connect(server.mongourl, function (err, conn) {
+            collection.update(
+                { '_id': docs._id },
                 {
-                    "name": docs.name,
-                    "id": docs._id,
-                    "spots": resultArray,
-                    "png": gm.staticMap(
-                        '',
-                        '',
-                        '250x250',
-                        false,
-                        false,
-                        'roadmap',
-                        markers,
-                        null,
-                        paths)
+                    $set: {
+                        'png': gm.staticMap(
+                            '',
+                            '',
+                            '250x250',
+                            false,
+                            false,
+                            'roadmap',
+                            markers,
+                            null,
+                            paths)
+                    }
+                },
+                { multi: true },
+                function (err, docs2) {
+                    response.send(
+                    {
+                        "name": docs.name,
+                        "id": docs._id,
+                        "spots": resultArray,
+                        "png": gm.staticMap(
+                            '',
+                            '',
+                            '250x250',
+                            false,
+                            false,
+                            'roadmap',
+                            markers,
+                            null,
+                            paths)
+                    });
                 });
-            });
+        });
     }
 }
 
@@ -274,15 +284,18 @@ parseDirectionResults = function (error, responselib, body, resultArray, markers
 exports.addRoute = function (request, response) {
     var mongojs = require('mongojs');
     var config = require('../auth/dbconfig');
+    var server = require('../server');
     var db = mongojs(config.dbname);
     var collection = db.collection(config.collection);
-    collection.insert({
-        "name": request.body.name,
-        "description": request.body.description,
-        "points": request.body.points
-    }, function (err, docs) {
-        searchById(docs[0]._id, response, false);
-        //response.send(JSON.stringify(docs));
+    require('mongodb').connect(server.mongourl, function (err, conn) {
+        collection.insert({
+            "name": request.body.name,
+            "description": request.body.description,
+            "points": request.body.points
+        }, function (err, docs) {
+            searchById(docs[0]._id, response, false);
+            //response.send(JSON.stringify(docs));
+        });
     });
 };
 
