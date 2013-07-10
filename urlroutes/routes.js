@@ -275,8 +275,7 @@ exports.addRoute = function (request, response) {
     var mongojs = require('mongojs');
     var config = require('../auth/dbconfig');
     var db = mongojs(config.dbname);
-    var collection = db.collection(config.collection);    
-    console.log(JSON.stringify(request.body.points));
+    var collection = db.collection(config.collection);
     collection.insert({
         "name": request.body.name,
         "description": request.body.description,
