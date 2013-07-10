@@ -151,7 +151,8 @@ function onGetRoutes(data, textStatus, jqXHR) {
 
 function addRouteInformation(index, value) {
     var html = " <div class='routeinfo' > " + value.name + "<br />" + value.description + 
-                "<br /><img onclick=selectRoute('" + value._id + "') src='" + value.png + "' width='150' height= '150'/>";
+            "<br /><img onclick=selectRoute('" + value._id + "') src='" + value.png + "' width='150' height= '150'/>";
+      
     $("#routes").append(html);
 };
 
