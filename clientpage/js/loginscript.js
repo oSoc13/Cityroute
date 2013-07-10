@@ -11,6 +11,7 @@ $(document).ready( function() {
         getGeolocation();
         $("#loginLink").show();
         $("#routeBuilder").hide();
+        $("#restart").show();
         }
     // User is not logged in
     else {
@@ -22,6 +23,7 @@ $(document).ready( function() {
         $("#spotlistTable").html("");
         $("#login").show();
         $("#loginLink").hide();
+        $("#restart").hide();
      }
 });
 
