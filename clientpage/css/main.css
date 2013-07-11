@@ -417,3 +417,8 @@ nav a:hover {
     width: auto;
     margin: 20px;
 }
+
+.optimizeSpan {
+    margin-left: 200px;
+    float:left;
+}

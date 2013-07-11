@@ -124,7 +124,9 @@ function showRoute ( spotID ){
 function onGetRoutes(data, textStatus, jqXHR) {  
     $("#routes").html("");
     // for each route
-    $("#routes").append("<p><input type='button' value='Add new route' onclick='showRouteBuilder()'/></p>");
+    $("#routes").append("<div style='float:left;' ><input type='button' value='Add new route' onclick='showRouteBuilder()'/> </div>"  + 
+        "<div class='optimizeSpan' >Optimize Waypoints: <br /><select id='optimizeSwitch'><option value='1'>On</option><option value='0'>Off</option></select></div>");
+        $('#optimizeSwitch').switchify();
     if (data != "") {
         $.each(data, addRouteInformation);
     }
@@ -147,6 +149,7 @@ function selectRoute(routeID) {
    * parameters: latitude and longitude
    * returns: list of spots
    */
+   
     var url =  "http://" + config_serverAddress + "/routes/" + routeID;
     $("#routes").hide();
     $("#map-canvas").show();

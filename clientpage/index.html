@@ -13,7 +13,9 @@
         <link rel="stylesheet" href="css/normalize.min.css"/>
         <link rel="stylesheet" href="css/main.css"/> 
         <link rel="stylesheet" href="css/smoothness/jquery-ui-1.10.3.custom.min.css"/> 
-        <link rel="stylesheet" href="css/jquery.mobile.structure-1.3.1.min.css" />       
+        <link rel="stylesheet" href="css/jquery.mobile.structure-1.3.1.min.css" />  
+        <link rel="stylesheet" href="css/jquery.switch.css" />  
+ 
 
         <script src="js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
         <style>
@@ -52,7 +54,6 @@
 
         <div class="main-container" style="height: 100%" >
             <div class="main wrapper clearfix"style="height: 100%">
-
                 <article style="height: 100%">
                     <header>
                         <p id = "geolocationPar">Waiting for geolocation...</p>
@@ -101,7 +102,6 @@
                     </ul>
                 </aside>
                 <br />
-
             </div> <!-- #main -->
         </div> <!-- #main-container -->
         
@@ -118,6 +118,8 @@
         <script type="text/javascript" src="js/jquery.cookie.js"></script>
         <script type="text/javascript" src="js/jquery-ui-1.10.3.custom.min.js"></script>
         <script type="text/javascript" src="js/jquery.ui.touch-punch.min.js"></script>
+        <script type="text/javascript" src="js/switch/jquery.switch.min.js"></script>
+        
         
         <!--<script src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.js"></script>-->
         <script type="text/javascript" src="js/jquery.mobile-1.3.1.min.js"></script>
@@ -129,6 +131,7 @@
             $( "#sortable" ).bind( "sortstop", function(event, ui) {
               $('#sortable').listview('refresh');
             });
+            $('#optimizeSwitch').switchify();
         </script>
 
         <script src="js/main.js"></script>

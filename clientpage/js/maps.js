@@ -49,6 +49,7 @@ function generateRoute( ) {
        origin: latLong, 
        destination: destLatLong,
        waypoints: waypoints,
+       optimizeWaypoints:$("#optimizeSwitch").val() == 1,
        travelMode: google.maps.DirectionsTravelMode.WALKING
      };
     
