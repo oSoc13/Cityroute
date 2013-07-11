@@ -388,10 +388,22 @@ Returns the details of a Route, including detailed information about every Spot 
 Example response:
 
 <pre>
-
+{
+    "meta": {
+        "code": 200,
+        "message": {}
+    },
+    "response": {
+        "name": "Thé route ;-)",
+        "id": "51de7b2bcf0abdfa3a000001",
+        "spots": 
+        [
+            // Array of GET /spots/:id
+        ],
+        "png": "http://xxx.png"
+    }
+}
 </pre>
-
-
 
 POST /routes
 ------------
