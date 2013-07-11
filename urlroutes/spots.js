@@ -203,7 +203,7 @@ exports.search = function (request, response) {
         }, function (error, responselib, body) {
             var jsonResult = body;
 
-            response.send(jsonResult.response.data.items);
+            response.send(jsonResult);
 
         });
     }
