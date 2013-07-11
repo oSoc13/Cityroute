@@ -122,10 +122,56 @@ function checkSpotsOnRoute ( currentPosition ) {
 */
 function showSpotInfo (spot) {
     $("#spotInfo").hide();
-    $("#spotInfo").html("<b> Spot: </b> " + spot.response.name + "</br> <b>Description:</b>" + spot.response.description +
-                       "<br /> <img src ='" + spot.response.images.cover.link +  "' width = '200' height='200'/>");
-    $("#spotInfo").append("<input type='button' value='Check in here' /><input type='button' value='Close' onclick= $('#spotInfo').slideUp(); />");
-    $("#spotInfo").slideDown();
+       
+    var latitude = spot.response.latitude;
+    var longitude = spot.response.longitude;
+    
+    var url =  "http://" + config_serverAddress + "/spots?latitude=" + latitude + "&longitude=" + longitude;
+    
+    $.ajax({
+       type: 'GET',
+       crossDomain:true,
+        url: url,
+        cache: false,
+        success: function (data, textStatus, jqXHR) {
+                    $("#spotInfo").html("<b> Spot: </b> " + spot.response.name + "</br> <b>Description:</b>" + spot.response.description +
+                        "<br /> <img src ='" + "img" /*spot.response.images.cover.link */+  "' width = '200' height='200'/>");
+                     $("#spotInfo").append("<input type='button' value='Check in here' onclick=checkinAtNearSpot('" + spot.response.id + "') /><input type='button' value='Close' onclick= $('#spotInfo').slideUp(); />");
+                     $("#spotInfo").append("<div onclick=$('#nearbyList').slideToggle()> Show/Hide nearby spots </div>");
+                        
+                    $("#spotInfo").append("<div  id = 'nearbyList' class='nearbySpots';/>");
+                    data = JSON.parse(data);
+                    $.each(data, function (index, value) {
+                        if (value.link.params.id != spot.response.id)
+                            //$("#spotInfo").append("<li>" + value.title + "</li>");
+                            $("#nearbyList").append("<div>" + value.title + "<br/><img width='150' height='150' src='" + value.mapspng + "'</div>");
+                    });          
+                    $('#nearbyList').hide();
+                    $("#spotInfo").slideDown();
+                },
+        error: function(jqXHR, errorstatus, errorthrown) {
+           alert("Error: " + errorstatus);
+        }
+    });    
+};
+
+function checkinAtNearSpot (spotID) {
+    var url =  "http://" + config_serverAddress + "/spots/checkin?spot_id=" + spotID + "&token=" + $.cookie("token");
+    $.ajax({
+       type: 'GET',
+       crossDomain:true,
+        url: url,
+        cache: false,
+        success: onCheckedInAtNearSpot,
+        error: function(jqXHR, errorstatus, errorthrown) {
+           alert("Error: " + errorstatus);
+        }
+    });
+};
+
+function onCheckedInAtNearSpot ( data, textStatus, jqXHR ) {
+    alert ("You are checked in!");
+    $('#spotInfo').slideUp();
 };
 
 

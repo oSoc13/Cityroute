@@ -403,4 +403,17 @@ nav a:hover {
     float:left;
     width: 240px;
     align: center;
-};
+}
+
+.nearbySpots div {
+     /*margin: 20px;*/
+    float:left;
+    width: 240px;
+    height: 240px;
+    align: center;  
+}
+
+#spotInfo {
+    width: auto;
+    margin: 20px;
+}
