@@ -171,9 +171,13 @@ function selectRoute(routeID) {
 /**
 * Callback function after receiving route information
 */
-function onGetRouteByID(data, textStatus, jqXHR) { 
-    showGoogleMaps();
-    routeData = data;
+function onGetRouteByID(data, textStatus, jqXHR) {
+    if (data.meta.code == 200) {
+        showGoogleMaps();
+        routeData = data.response;
+    } else {
+        alertAPIError(data.meta.message);
+    }
 };
 
 

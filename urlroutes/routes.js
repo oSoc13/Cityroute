@@ -215,6 +215,7 @@ parseDirectionResults = function (error, responselib, body, resultArray, markers
     var config = require('../auth/dbconfig');
     var mongojs = require('mongojs');
     var server = require('../server');
+    var utils = require('../utils');
 
     var db = mongojs(config.dbname);
     var collection = db.collection(config.collection);
@@ -228,14 +229,15 @@ parseDirectionResults = function (error, responselib, body, resultArray, markers
 
     // send the response to the user, it contains a link to a static png with a map view on Google Maps
     if (returnResponse) {
-        response.send(
-            {
+        response.send({
+            "meta": utils.createOKMeta(),
+            "response": {
                 "name": docs.name,
                 "id": docs._id,
                 "spots": resultArray,
                 "png": docs.png
             }
-        );
+        });
     }
     else {
         var db = mongojs(config.dbname);
@@ -261,22 +263,31 @@ parseDirectionResults = function (error, responselib, body, resultArray, markers
                 },
                 { multi: true },
                 function (err, docs2) {
-                    response.send(
-                    {
-                        "name": docs.name,
-                        "id": docs._id,
-                        "spots": resultArray,
-                        "png": gm.staticMap(
-                            '',
-                            '',
-                            '250x250',
-                            false,
-                            false,
-                            'roadmap',
-                            markers,
-                            null,
-                            paths)
-                    });
+                    if (err) {
+                        response.send({
+                            "meta": utils.createErrorMeta(500, "X_001", "Something went wrong with the MongoDB :( : " + err),
+                            "response": {}
+                        });
+                    } else {
+                        response.send({
+                            "meta": utils.createOKMeta(),
+                            "response": {
+                                "name": docs.name,
+                                "id": docs._id,
+                                "spots": resultArray,
+                                "png": gm.staticMap(
+                                    '',
+                                    '',
+                                    '250x250',
+                                    false,
+                                    false,
+                                    'roadmap',
+                                    markers,
+                                    null,
+                                    paths)
+                            }
+                        });
+                    }
                 });
         });
     }
