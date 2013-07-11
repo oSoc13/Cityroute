@@ -133,21 +133,24 @@ function showSpotInfo (spot) {
         url: url,
         cache: false,
         success: function (data, textStatus, jqXHR) {
-                    $("#spotInfo").html("<b> Spot: </b> " + spot.response.name + "</br> <b>Description:</b>" + spot.response.description +
-                        "<br /> <img src ='" + spot.response.images.cover.link +  "' width = '200' height='200'/>");
-                     $("#spotInfo").append("<input type='button' value='Check in here' onclick=checkinAtNearSpot('" + spot.response.id + "') /><input type='button' value='Close' onclick= $('#spotInfo').slideUp(); />");
-                     $("#spotInfo").append("<div onclick=$('#nearbyList').slideToggle()> Show/Hide nearby spots </div>");
-                        
-                    $("#spotInfo").append("<div  id = 'nearbyList' class='nearbySpots';/>");
-                    data = JSON.parse(data);
-                    $.each(data, function (index, value) {
-                        if (value.link.params.id != spot.response.id)
-                            //$("#spotInfo").append("<li>" + value.title + "</li>");
-                            $("#nearbyList").append("<div>" + value.title + "<br/><img width='150' height='150' src='" + value.mapspng + "'</div>");
-                    });          
-                    $('#nearbyList').hide();
-                    $("#spotInfo").slideDown();
-                },
+            if (data.meta.code == 200) {
+                $("#spotInfo").html("<b> Spot: </b> " + spot.response.name + "</br> <b>Description:</b>" + spot.response.description +
+                    "<br /> <img src ='" + spot.response.images.cover.link +  "' width = '200' height='200'/>");
+                 $("#spotInfo").append("<input type='button' value='Check in here' onclick=checkinAtNearSpot('" + spot.response.id + "') /><input type='button' value='Close' onclick= $('#spotInfo').slideUp(); />");
+                 $("#spotInfo").append("<div onclick=$('#nearbyList').slideToggle()> Show/Hide nearby spots </div>");
+                    
+                $("#spotInfo").append("<div  id = 'nearbyList' class='nearbySpots';/>");
+                $.each(data.response.data.items, function (index, value) {
+                    if (value.link.params.id != spot.response.id)
+                        //$("#spotInfo").append("<li>" + value.title + "</li>");
+                        $("#nearbyList").append("<div>" + value.title + "<br/><img width='150' height='150' src='" + value.mapspng + "'</div>");
+                });          
+                $('#nearbyList').hide();
+                $("#spotInfo").slideDown();
+            } else {
+                alertAPIError(data.meta.message);
+            }
+        },
         error: function(jqXHR, errorstatus, errorthrown) {
            alert("Error: " + errorstatus);
         }

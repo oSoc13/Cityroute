@@ -30,18 +30,45 @@ Replace the X's and hardcoded strings correct strings.
 
 Start your MongoDB database and then start the server with the following command:
 <pre>
-node server.js</pre>
+node server.js
+</pre>
 
 
 API Documentation
 =================
-Users
------
-First and foremost, authentication is required.
-* GET /users/login/:base64
+
+GET /users/login/:base64
+------------------------
+
+*:base64* should be a Base64 encoding of *username:password*.
 
 Returns information about that user, including a token needed for API calls which require authentication.
-*:base64* should be a Base64 encoding of *username:password*.
+
+Example response:
+
+<pre>
+{
+    "meta": {
+        "code": 200,
+        "message": {}
+    },
+    "response": {
+        "anonymous": false,
+        "balance": 0,
+        "email": "test@mv.be",
+        "first_name": "user",
+        "friends_count": 0,
+        "image": "",
+        "last_name": "test",
+        "pending_count": 0,
+        "token": "40f4aa62c3526dde90fcf35769155f69adc5749f",
+        "user_id": 10004853,
+        "vikingspots_channel": "spots"
+    }
+}
+</pre>
+
+
 
 Spots
 -----
