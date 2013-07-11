@@ -10,6 +10,8 @@ var googleMap;
 var myMarker;
 var taskID;
 
+var visitedSpots = [];
+
 
 
 /**
@@ -87,12 +89,43 @@ function onRouteCalculated (directionsResult, directionsStatus){
     dirDisplay.setDirections(directionsResult);
     
     window.clearInterval(taskID);
+    /* Check each 3 seconds for an update of the position */
     taskID = window.setInterval(function(){
             navigator.geolocation.getCurrentPosition( function (position) {
                 var latLong = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-                myMarker.setPosition(latLong);    
+                myMarker.setPosition(latLong);
+                checkSpotsOnRoute(latLong);
             });
     },3000);
+};
+
+/**
+* compare your current position with the position of the spots on the route
+* @param currentPosition your current position
+*/
+function checkSpotsOnRoute ( currentPosition ) {
+    $.each( routeData.spots, function (index, value) {
+        var distance = haversine( currentPosition.lat(), value.response.latitude, currentPosition.lng(), value.response.longitude);
+        if (distance <= 0.100) {
+            if ( $.inArray( value, visitedSpots ) < 0 ) {
+                showSpotInfo(value);
+                //alert ("You are close at " + value.response.name + ":" + value.response.description);
+                visitedSpots.push(value);
+            }      
+        }
+        });
+};
+
+/**
+* show information about a nearby spot
+* @param spot the nearby spot
+*/
+function showSpotInfo (spot) {
+    $("#spotInfo").hide();
+    $("#spotInfo").html("<b> Spot: </b> " + spot.response.name + "</br> <b>Description:</b>" + spot.response.description +
+                       "<br /> <img src ='" + spot.response.images.cover.link +  "' width = '200' height='200'/>");
+    $("#spotInfo").append("<input type='button' value='Check in here' /><input type='button' value='Close' onclick= $('#spotInfo').slideUp(); />");
+    $("#spotInfo").slideDown();
 };
 
 
@@ -117,6 +150,40 @@ function onMapsLoaded() {
     
     generateRoute();
 };
+
+/**
+* a function to calculate the distance between points based on lat/long coordinates
+* @param latA latitude of the first point
+* @param longA longitude of the first point
+* @param latB latitude of the second point
+* @param longB longitude of the second point
+* @return the distante in m between the two points
+*/
+function haversine(latA, latB, lonA, lonB){
+    var R = 6371; // km
+    var dLat = toRad(latB-latA);
+    var dLon = toRad(lonB-lonA);
+    var latA = toRad(latA);
+    var latB = toRad(latB);
+
+    var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(latA) * Math.cos(latB); 
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+    var d = R * c;
+    
+    return d ;
+};
+
+/**
+* convert degrees to Radians
+* @param value input degrees to be converted
+* @return the value in tadians
+*/
+function toRad(value) {
+    /** Converts numeric degrees to radians */
+    return value * Math.PI / 180;
+};
+
+
 
 /**
 * load google maps

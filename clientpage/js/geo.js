@@ -193,6 +193,7 @@ function restart() {
     $("#sortableInput").html("");
     $("#spotListTable").html("");
     $("#suggestions").html("");
+    $("#spotInfo").hide();
     window.clearInterval(taskID);
 };
 
