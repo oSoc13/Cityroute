@@ -34,7 +34,7 @@ node server.js
 </pre>
 
 
-API Documentation
+Users API Documentation
 =================
 
 GET /users/login/:base64
@@ -68,34 +68,277 @@ Example response:
 }
 </pre>
 
+Spots API Documentation
+=======================
 
-
-Spots
------
-There are 5 calls possible to the Spots API:
-* GET /spots
+GET /spots
+----------
+Requires *latitude* and *longitude* as URL parameters.
 
 Returns a list of nearby Spots.
-Requires *latitude* and *longitude* as URL parameters.
-* GET /spots/:id
+
+Example response: 
+
+<pre>
+{
+    "meta": {
+        "code": 200,
+        "message": {}
+    },
+    "response": {
+        "data": {
+            "items": 
+            [
+                {
+                    "description": "Nearby spots",
+                    "icon": {
+                        "image": "http://xxxx.png",
+                        "name": "nearby"
+                    },
+                    "link": {
+                        "channel": "spots",
+                        "login_required": false,
+                        "params": {
+                            "id": xxxxx
+                        },
+                        "type": "spotdetail",
+                        "view": "SpotDetail"
+                    },
+                    "meta_info": {
+                        "distance": 0.023540002559,
+                        "distance_str": "24m",
+                        "latitude": xxxxxx,
+                        "longitude": xxxxx,
+                        "score": 0.748237
+                    },
+                    "title": "Spot Name",
+                    "mapspng": "http://xxxx.png"
+                }
+            ]
+        },
+        "html": "",
+        "title": "Nearby spots",
+        "type": "list"
+    }
+}
+</pre>
+
+GET /spots/:id
+--------------
+*:id* should be the Spot id as included in the json results of other API calls.
 
 Returns detailed information about a Spot.
-*:id* should be the Spot id as included in the json results of other API calls.
-* GET /spots/checkin
 
-Checks a user in at a specific Spot
+Example response:
+
+<pre>
+{
+    "meta":{
+        "code":200,
+        "message":{}
+    },
+    "response":{
+        "always_closed":true,
+        "always_open":false,
+        "categories":
+        [
+            {
+                "id":xxxx,
+                "sub_categories":[xx]
+            }
+        ],
+        "city":"xxxxx",
+        "country":"BE",
+        "creator_id":xxxx,
+        "description":"Sample description",
+        "email":"xx@xx.xx",
+        "id":xxxx,
+        "images":{
+            "cover":{
+                "id":xxx,
+                "link":"http://xxxx.jpg"
+            },
+            "images":[]
+        },
+        "latitude":xxxx,
+        "longitude":xxxx,
+        "name":"Spot name",
+        "no_opening_hours":false,
+        "opening_hours":[],
+        "opening_hours_extra":"Closed in July",
+        "owner_id":xxxx,
+        "phone_number":"xxxxxxxxxx",
+        "postal_code":"xxxx",
+        "private":false,
+        "slug":"xxxxx",
+        "street":"Street name",
+        "street_number":"1",
+        "street_number_bus":"",
+        "website":"http://xxxx.com"
+    }
+}
+</pre>
+
+GET /spots/checkin
+------------------
 Requires *token* and *spot_id* as URL parameters.
-* GET /spots/relevant
+
+Checks a user in at a specific Spot.
+
+Example response:
+<pre>
+{
+    "meta": {
+        "code": 200,
+        "message": {}
+    },
+    "response": {
+        "background": false,
+        "data": {
+            "color": "15a4da",
+            "message": "Yay, you've just checked in",
+            "status": "ok",
+            "spot_id": "xxxxxx"
+        },
+        "html": "",
+        "needs_long_poll": false,
+        "title": "xxxxx",
+        "type": "?"
+    }
+}
+</pre>
+
+GET /spots/relevant
+-------------------
+Requires *token*, *latitude* and *longitude* as URL parameters.
 
 Returns a list of spots relevant to a user and his location.
-Requires *token*, *latitude* and *longitude* as URL parameters.
-* GET /spots/search
 
-Returns a list of spots relevant to a user and his location when provided with a search term.
+Example response:
+
+<pre>
+{
+    "meta": {
+        "code": 200,
+        "message": {}
+    },
+    "response": {
+        "data": {
+            "items": 
+            [
+                {
+                    "description": "Spot Name",
+                    "icon": {
+                        "color": "222222",
+                        "image": "http://xxx.png",
+                        "name": "xxx"
+                    },
+                    "left_link": {
+                        "channel": "builtin",
+                        "login_required": false,
+                        "params": {
+                            "channel": "xxxxxxxx"
+                        },
+                        "type": "list",
+                        "view": "Discover"
+                    },
+                    "link": {
+                        "channel": "spots",
+                        "login_required": false,
+                        "params": {
+                            "id": xxxxxx
+                        },
+                        "type": "spotdetail",
+                        "view": "SpotDetail"
+                    },
+                    "meta_info": {
+                        "distance": 1.57320408075,
+                        "distance_str": "1km",
+                        "latitude": xxxxxx,
+                        "longitude": xxxxxx,
+                        "score": 1.651258
+                    },
+                    "title": "xxxxx",
+                    "mapspng": "http://xxxx.png"
+                }
+            ]
+        },
+        "html": "",
+        "title": "Hi xxxxxxx!",
+        "type": "overviewlist"
+    }
+}
+</pre>
+
+GET /spots/search
+-----------------
 Requires *token*, *latitude*, *longitude* and *search_term* as URL parameters.
 
-Routes
-------
+Returns a list of spots relevant to a user and his location when provided with a search term.
+
+Example response:
+
+<pre>
+{
+    "meta": {
+        "code": 200,
+        "message": {}
+    },
+    "response": {
+        "background": false,
+        "data": {
+            "actions": 
+            [
+                {
+                    "description": "Can't find it? Create it!",
+                    "icon": {
+                        "color": "ffffff",
+                        "image": "http://xxxx.png",
+                        "name": "spot"
+                    },
+                    "link": {
+                        "channel": "spots",
+                        "login_required": false,
+                        "params": {},
+                        "type": "createspot",
+                        "view": "CreateSpot"
+                    },
+                    "title": "Create a new spot"
+                }
+            ],
+            "items": 
+            [
+                {
+                    "description": "Spot description",
+                    "icon": {
+                        "color": "ffffff",
+                        "image": "http://xxx.png",
+                        "name": "xxxx"
+                    },
+                    "link": {
+                        "channel": "spots",
+                        "login_required": false,
+                        "params": {
+                            "id": xxxx
+                        },
+                        "type": "spotdetail",
+                        "view": "SpotDetail"
+                    },
+                    "title": "Spot Name"
+                },
+            ]
+        },
+        "html": "",
+        "needs_long_poll": false,
+        "title": "Search",
+        "type": "?"
+    }
+}
+</pre>
+
+Routes API Documentation
+=======================
+
 There are 3 calls possible to the Routes API
 * GET /routes
 
