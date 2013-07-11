@@ -339,11 +339,21 @@ Example response:
 Routes API Documentation
 =======================
 
-There are 3 calls possible to the Routes API
-* GET /routes
-
-Returns a list of Routes starting or ending a a specific spot including a static Google Maps PNG representation.
+GET /routes
+-----------
 Requires *spot_id* as URL parameter.
+
+Returns a list of Routes starting or ending at a specific spot.
+
+Example response:
+
+<pre>
+
+</pre>
+
+
+
+
 * GET /routes/:id
 
 Returns the details of a Route, including detailed information about every Spot on the route.

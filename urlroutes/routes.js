@@ -34,7 +34,17 @@ exports.findRoutesStartingAtSpot = function (request, response) {
                             var resultDocs = docs;
                             resultDocs.concat(docs2);
 
-                            response.send(resultDocs);
+                            if (err) {
+                                response.send({
+                                    "meta": utils.createErrorMeta(500, "X_001", "Something went wrong with the MongoDB :( : " + err),
+                                    "response": {}
+                                });
+                            } else {
+                                response.send({
+                                    "meta": utils.createOKMeta(),
+                                    "response": {"routes": resultDocs}
+                                });
+                            }
                         });
                 });
         });

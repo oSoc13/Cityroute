@@ -127,8 +127,10 @@ function onGetRoutes(data, textStatus, jqXHR) {
     $("#routes").append("<div style='float:left;' ><input type='button' value='Add new route' onclick='showRouteBuilder()'/> </div>"  + 
         "<div class='optimizeSpan' >Optimize Waypoints: <br /><select id='optimizeSwitch'><option value='1'>On</option><option value='0'>Off</option></select></div>");
         $('#optimizeSwitch').switchify();
-    if (data != "") {
-        $.each(data, addRouteInformation);
+    if (data.meta.code == 200) {
+        $.each(data.response.routes, addRouteInformation);
+    } else {
+        alertAPIError(data.meta.message);
     }
 };
 
