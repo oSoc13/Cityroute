@@ -109,7 +109,6 @@ function checkSpotsOnRoute ( currentPosition ) {
         if (distance <= 0.100) {
             if ( $.inArray( value, visitedSpots ) < 0 ) {
                 showSpotInfo(value);
-                //alert ("You are close at " + value.response.name + ":" + value.response.description);
                 visitedSpots.push(value);
             }      
         }
@@ -135,7 +134,7 @@ function showSpotInfo (spot) {
         cache: false,
         success: function (data, textStatus, jqXHR) {
                     $("#spotInfo").html("<b> Spot: </b> " + spot.response.name + "</br> <b>Description:</b>" + spot.response.description +
-                        "<br /> <img src ='" + "img" /*spot.response.images.cover.link */+  "' width = '200' height='200'/>");
+                        "<br /> <img src ='" + spot.response.images.cover.link +  "' width = '200' height='200'/>");
                      $("#spotInfo").append("<input type='button' value='Check in here' onclick=checkinAtNearSpot('" + spot.response.id + "') /><input type='button' value='Close' onclick= $('#spotInfo').slideUp(); />");
                      $("#spotInfo").append("<div onclick=$('#nearbyList').slideToggle()> Show/Hide nearby spots </div>");
                         

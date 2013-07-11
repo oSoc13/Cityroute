@@ -15,15 +15,13 @@ var routeData;
 /**
 * get the geo location
 */
-function getGeolocation()
-{
+function getGeolocation() {
     $.getScript("/js/auth/apikey.js",function(){googleKey = mapsapikey});
-     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(onLocationKnown);
-    }
-    else {
-        $("#geolocationPar").text("Geolocation is not supported by this browser."   );
-    }
+    
+    navigator.geolocation.getCurrentPosition(onLocationKnown,function(err){
+        alert("Could not request geolocation");
+        },
+        {timeout:3000});
 };
 
 /**
@@ -31,7 +29,6 @@ function getGeolocation()
 */
 function onLocationKnown(position) {
     $("#geolocationPar").html("Latitude: " + position.coords.latitude +  "</br>Longitude: " + position.coords.longitude);   
-   
    // send a request to the nodeJS API to acquire the nearby spots
    // parameters: latitude and longitude
    // returns: list of spots
