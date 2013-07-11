@@ -48,7 +48,7 @@ exports.findRelevantSpots = function (request, response) {
                     null,
                     null);
             }
-            response.send(JSON.stringify(jsonResult.response.data.items));
+            response.send(JSON.stringify(jsonResult));
         });
     }
 }
