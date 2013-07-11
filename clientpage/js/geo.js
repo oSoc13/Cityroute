@@ -194,6 +194,8 @@ function restart() {
     $("#spotListTable").html("");
     $("#suggestions").html("");
     $("#spotInfo").hide();
+    $("#searchform").hide();
+    $("#searchresults").html("");
     window.clearInterval(taskID);
 };
 

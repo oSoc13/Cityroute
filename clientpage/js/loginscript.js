@@ -12,7 +12,8 @@ $(document).ready( function() {
         $("#loginLink").show();
         $("#routeBuilder").hide();
         $("#restart").show();
-        }
+        $("#searchform").hide();
+    }
     // User is not logged in
     else {
         $("#geolocationPar").hide(),
@@ -24,6 +25,7 @@ $(document).ready( function() {
         $("#login").show();
         $("#loginLink").hide();
         $("#restart").hide();
+        $("#searchform").hide();
      }
 });
 

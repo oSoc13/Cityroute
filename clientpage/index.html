@@ -28,6 +28,9 @@
             #suggestions{ list-style-type: none; margin: 0; padding: 0;  }
             #suggestions li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em;  }
             #suggestions li span { position: absolute; margin-left: -1.3em; }
+            #searchresults { list-style-type: none; margin: 0; padding: 0;  }
+            #searchresults li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em;  }
+            #searchresults li span { position: absolute; margin-left: -1.3em; }
         </style>
     </head>
     <body style="height: 100%">
@@ -87,7 +90,14 @@
 
                 <aside>
                     <h3 id="restart" onclick="restart()">New check-in</h3>
+                    <div id="searchform">
+                    <table>
+                    <tr><td>Search</td><td><input class="inp" id="searchTerm" type="text" /> </td><td><input type="button" value="Search" onclick="search()"/></td></tr>
+                    </table>
+                    <ul id="searchresults">
+                    </ul>
                     <ul id="suggestions">
+                    </div>
                     </ul>
                 </aside>
                 <br />
@@ -99,7 +109,7 @@
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script> 
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.1.min.js"><\/script>')</script>
         <script src="js/socket.io/socket.io.js"></script>
-        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+        <script type="text/javascript" src="js/jsapi.js"></script>
         <script type="text/javascript" src="js/geo.js"></script>
         <script type="text/javascript" src="js/routebuilder.js"></script>
         <script type="text/javascript" src="js/loginscript.js"></script>
