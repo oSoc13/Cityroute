@@ -3,7 +3,13 @@
  * @copyright: OKFN Belgium
  */
 
-
+/**
+ * Find relevant spots for a user based on his location
+ * @param token user token
+ * @param latitude latitude of the user
+ * @param longitude longitude of the user
+ * @return JSON response
+ */
 exports.findRelevantSpots = function (request, response) {
     var utils = require('../utils');
     var https = require('https');
@@ -48,7 +54,7 @@ exports.findRelevantSpots = function (request, response) {
                     null,
                     null);
             }
-            response.send(JSON.stringify(jsonResult.response.data.items));
+            response.send(jsonResult);
         });
     }
 }
@@ -103,14 +109,11 @@ exports.findSpotsByLatLong = function (request, response) {
                     null,
                     null);
             }
-            
-
-            response.send(JSON.stringify(jsonResult.response.data.items));
+            response.send(jsonResult);
         });
     }
     else {
         // bad request
-        response.statusCode = 400;
         response.send({
             "meta": utils.createErrorMeta(400, "X_001", "The 'longtiude' or 'latitude' field has no data and doesn't allow a default or null value."),
             "response": {}

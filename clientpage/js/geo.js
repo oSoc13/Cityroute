@@ -47,27 +47,22 @@ function onLocationKnown(position) {
 
 /**
 * callback function after the call in showPosition
-*/
-function onGetSpots(data, textStatus, jqXHR) {
-    parseSpotList(data);
-};
-
-/**
 * parse the list of nearby spots and show them in an (ugly) table
 */
-function parseSpotList( spotList ){
-    var parsedSpotlist = JSON.parse(spotList);
-    
-    // clear the list of spots for the routebuilder
-    routeBuilderClearSpots();
-    $.each(parsedSpotlist, function(index, value) {
-        $('#spotListTable').append('<tr><td>' + value.title + '</td><td>' + value.meta_info.distance_str + 
-        '</td><td> <input type="button" onclick=checkIn("' + value.link.params.id + '") value="Check In" /></tr>');
-        $("#geolocationPar").hide();
-        $("#spotList").show();
-        routeBuilderAddSpot(value);
-
-    });    
+function onGetSpots(data, textStatus, jqXHR) {
+    if (data.meta.code == 200) {
+        // clear the list of spots for the routebuilder
+        routeBuilderClearSpots();
+        $.each(data.response.data.items, function(index, value) {
+            $('#spotListTable').append('<tr><td>' + value.title + '</td><td>' + value.meta_info.distance_str + 
+            '</td><td> <input type="button" onclick=checkIn("' + value.link.params.id + '") value="Check In" /></tr>');
+            $("#geolocationPar").hide();
+            $("#spotList").show();
+            routeBuilderAddSpot(value);
+        });
+    } else {
+        alertAPIError(data.meta.message);
+    }
 };
 
 /**
