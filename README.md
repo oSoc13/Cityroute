@@ -348,17 +348,53 @@ Returns a list of Routes starting or ending at a specific spot.
 Example response:
 
 <pre>
+{
+    "meta": {
+        "code": 200,
+        "message": {}
+    },
+    "response": {
+        "routes": 
+        [
+            {
+                "_id": "xxxxxxxxxxxxxxxxxxxxxx",
+                "description": "Another awesome route",
+                "name": "Route name",
+                "png": "http://xxx.png",
+                "points": 
+                [
+                    {
+                        "item": "xxxx"
+                    },
+                    {
+                        "item": "xxxx"
+                    },
+                    {
+                        "item": "xxxx"
+                    }
+                ]
+            }
+        ]
+    }
+}
+</pre>
+
+GET /routes/:id
+---------------
+*:id* should be the Route id as included in the json results of a GET or POST to /routes.
+
+Returns the details of a Route, including detailed information about every Spot on the route.
+
+Example response:
+
+<pre>
 
 </pre>
 
 
 
-
-* GET /routes/:id
-
-Returns the details of a Route, including detailed information about every Spot on the route.
-*:id* should be the Route id as included in the json results of a GET or POST to /routes.
-* POST /routes
+POST /routes
+------------
 
 Adds a route to the database and generates a static Google Maps png representation.
 Requires form data in a json format, for example:
