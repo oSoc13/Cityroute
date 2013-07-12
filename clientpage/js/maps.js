@@ -88,24 +88,39 @@ function generateRoute( ) {
 * callback function: after the route has been generated
 */
 function onRouteCalculated (directionsResult, directionsStatus){
+
+    // imagenames for the markerimages
+    var markerArray = ["dd-start","markerA","markerB","markerC","markerD","markerE","markerF","markerG","markerH","markerI","markerJ","markerK"];
+    
+    // the last spot gets also a special icon
+    markerArray[directionsResult.routes[0].waypoint_order.length + 1] = "dd-end";
     dirDisplay.setDirections(directionsResult);
     
-    console.log(JSON.stringify(directionsResult.routes.legs));
-    
+    // add markers to mark the spots
     $.each(routeData.spots, function(index, value) {
+        var wparray = directionsResult.routes[0].waypoint_order;
+        var newWpArray = [];
+        newWpArray = newWpArray.concat([-1],wparray, [wparray.length]);
+        var markerIndex = newWpArray[index] + 1;
+
+        var iconString = "http://www.google.com/mapfiles/" + markerArray[markerIndex] + ".png";
 
         var markerOptions = 
         {   
             position: new google.maps.LatLng(value.response.latitude, value.response.longitude),
             title: "Location:" + value.response.name,
             animation: google.maps.Animation.DROP,
-            clickable: true
+            clickable: true,
+            icon: iconString
+            
         }   
         var marker = new google.maps.Marker(markerOptions);
         marker.setVisible(true);
         marker.setMap(googleMap);
         var infoWindow = new google.maps.InfoWindow();
-        infoWindow.setContent("Location: " + value.response.name);
+        
+        // add a infowindow with the name of the spot
+        infoWindow.setContent("<b>Location:</b>" + value.response.name + "<br /><b>Description:</b>" + value.response.description);
         
         google.maps.event.addListener(marker, 'click', function() {
             infoWindow.open(googleMap, marker);
