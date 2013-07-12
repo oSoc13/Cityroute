@@ -141,6 +141,27 @@ function onRouteCalculated (directionsResult, directionsStatus){
                 checkSpotsOnRoute(latLong);
             }, function (error) {alert("Error while acquiring current location");},{enableHighAccuracy:true});
     },3000);
+    
+    showRouteMetaInfo(directionsResult.routes[0].waypoint_order);
+};
+
+
+function showRouteMetaInfo(waypoints){
+    $("#routeSpots").slideDown();
+    $("#routeSpotsMeta").html("Routename: " + routeData.name + "<br />Description:<br />" + routeData.description + "<br /><br /><b>Spots: </b>");
+    $("#routeSpotsList").html("");
+    
+    
+    $("#routeSpotsList").append("<li>" + routeData.spots[0].response.name + "</li>");
+
+    
+    for (var i = 0; i < waypoints.length; ++i ){
+          $("#routeSpotsList").append("<li>" + routeData.spots[waypoints[i] + 1].response.name + "</li>");
+    }
+    $("#routeSpotsList").append("<li>" + routeData.spots[waypoints.length + 1].response.name + "</li>");
+    
+    
+    
 };
 
 

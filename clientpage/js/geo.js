@@ -198,6 +198,7 @@ function restart() {
     $("#spotListTable").html("");
     $("#suggestions").html("");
     $("#spotInfo").hide();
+    $("#routeSpots").hide();
     $("#searchform").hide();
     $("#tabs").hide();
     $("#searchresults").html("");
