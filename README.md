@@ -396,6 +396,7 @@ Example response:
     "response": {
         "name": "Thé route ;-)",
         "id": "51de7b2bcf0abdfa3a000001",
+        "description": "Route description",
         "spots": 
         [
             // Array of GET /spots/:id
