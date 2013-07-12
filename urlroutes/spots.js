@@ -38,23 +38,36 @@ exports.findRelevantSpots = function (request, response) {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         }, function (error, responselib, body) {
-            var jsonResult = JSON.parse(body);
-            
-            var markers = [];
-            for (var i = 0; i < jsonResult.response.data.items.length; ++i) {
-                markers[0] = { 'location': jsonResult.response.data.items[i].meta_info.latitude + " " + jsonResult.response.data.items[i].meta_info.longitude };
-                jsonResult.response.data.items[i].mapspng = gm.staticMap(
-                    '',
-                    15,
-                    '250x250',
-                    false,
-                    false,
-                    'roadmap',
-                    markers,
-                    null,
-                    null);
+            if (error) {
+                response.send({
+                    "meta": utils.createErrorMeta(400, "X_001", "The CityLife API returned an error. Please try again later. " + error),
+                    "response": {}
+                });
+            } else {
+                var jsonResult = JSON.parse(body);
+
+                var markers = [];
+                for (var i = 0; i < jsonResult.response.data.items.length; ++i) {
+                    markers[0] = { 'location': jsonResult.response.data.items[i].meta_info.latitude + " " + jsonResult.response.data.items[i].meta_info.longitude };
+                    jsonResult.response.data.items[i].mapspng = gm.staticMap(
+                        '',
+                        15,
+                        '250x250',
+                        false,
+                        false,
+                        'roadmap',
+                        markers,
+                        null,
+                        null);
+                }
+                response.send(jsonResult);
             }
-            response.send(jsonResult);
+        });
+    } else {
+        // bad request
+        response.send({
+            "meta": utils.createErrorMeta(400, "X_001", "The 'latitude', 'longitude' or 'token' parameter has no data and doesn't allow a default or null value."),
+            "response": {}
         });
     }
 }
@@ -93,23 +106,31 @@ exports.findSpotsByLatLong = function (request, response) {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         }, function (error, responselib, body) {
-            var jsonResult = JSON.parse(body);
+            if (error) {
+                // bad request
+                response.send({
+                    "meta": utils.createErrorMeta(400, "X_001", "The CityLife API returned an error. Please try again later. " + error),
+                    "response": {}
+                });
+            } else {
+                var jsonResult = JSON.parse(body);
 
-            var markers = [];
-            for (var i = 0; i < jsonResult.response.data.items.length; ++i) {
-                markers[0] = { 'location': jsonResult.response.data.items[i].meta_info.latitude + " " + jsonResult.response.data.items[i].meta_info.longitude };
-                jsonResult.response.data.items[i].mapspng = gm.staticMap(
-                    '',
-                    15,
-                    '250x250',
-                    false,
-                    false,
-                    'roadmap',
-                    markers,
-                    null,
-                    null);
+                var markers = [];
+                for (var i = 0; i < jsonResult.response.data.items.length; ++i) {
+                    markers[0] = { 'location': jsonResult.response.data.items[i].meta_info.latitude + " " + jsonResult.response.data.items[i].meta_info.longitude };
+                    jsonResult.response.data.items[i].mapspng = gm.staticMap(
+                        '',
+                        15,
+                        '250x250',
+                        false,
+                        false,
+                        'roadmap',
+                        markers,
+                        null,
+                        null);
+                }
+                response.send(jsonResult);
             }
-            response.send(jsonResult);
         });
     }
     else {
@@ -155,14 +176,25 @@ exports.checkIn = function (request, response) {
                 'Content-Type': 'application/json'
             }
         }, function (error, responselib, body) {
-            if (typeof body !== undefined && typeof body.response !== undefined)
-                body.response.data.spot_id = request.query.spot_id;
-            response.send(body);
+            if (error) {
+                response.send({
+                    "meta": utils.createErrorMeta(400, "X_001", "The CityLife API returned an error. Please try again later. " + error),
+                    "response": {}
+                });
+            } else {
+                if (typeof body !== undefined && typeof body.response !== undefined)
+                    body.response.data.spot_id = request.query.spot_id;
+                response.send(body);
+            }
             
         });
     }
     else {
         // bad request
+        response.send({
+            "meta": utils.createErrorMeta(400, "X_001", "The 'token' or 'spot_id' field has no data and doesn't allow a default or null value."),
+            "response": {}
+        });
     }
 };
 
@@ -204,14 +236,24 @@ exports.search = function (request, response) {
                 'Content-Type': 'application/json'
             }
         }, function (error, responselib, body) {
-            var jsonResult = body;
+            if (error) {
+                response.send({
+                    "meta": utils.createErrorMeta(400, "X_001", "The CityLife API returned an error. Please try again later. " + error),
+                    "response": {}
+                });
+            } else {
+                var jsonResult = body;
 
-            response.send(jsonResult);
-
+                response.send(jsonResult);
+            }
         });
     }
     else {
         // bad request
+        response.send({
+            "meta": utils.createErrorMeta(400, "X_001", "The 'token', 'latitude', 'longitude' or 'search_term' field has no data and doesn't allow a default or null value."),
+            "response": {}
+        });
     }
 };
 
@@ -234,11 +276,16 @@ exports.findById = function (request, response) {
             'Content-Type': 'application/x-www-form-urlencoded'
         }
     }, function (error, responselib, body) {
-        var jsonResult = JSON.parse(body);
+        if (error) {
+            response.send({
+                "meta": utils.createErrorMeta(400, "X_001", "The CityLife API returned an error. Please try again later. " + error),
+                "response": {}
+            });
+        } else {
+            var jsonResult = JSON.parse(body);
 
-        console.log(jsonResult);
-
-        response.send(JSON.stringify(jsonResult));
+            response.send(JSON.stringify(jsonResult));
+        }
     });
 };
 
