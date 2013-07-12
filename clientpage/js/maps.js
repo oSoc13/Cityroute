@@ -9,6 +9,7 @@
 var googleMap;
 var myMarker;
 var taskID;
+var nearbySpotOpened = false;
 
 var visitedSpots = [];
 
@@ -89,6 +90,8 @@ function generateRoute( ) {
 function onRouteCalculated (directionsResult, directionsStatus){
     dirDisplay.setDirections(directionsResult);
     
+    //console.log(JSON.stringify(directionsResult.routes));
+    
     window.clearInterval(taskID);
     /* Check each 3 seconds for an update of the position */
     taskID = window.setInterval(function(){
@@ -96,7 +99,7 @@ function onRouteCalculated (directionsResult, directionsStatus){
                 var latLong = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
                 myMarker.setPosition(latLong);
                 checkSpotsOnRoute(latLong);
-            });
+            }, function (error) {alert("Error while acquiring current location");},{enableHighAccuracy:true});
     },3000);
 };
 
@@ -107,10 +110,11 @@ function onRouteCalculated (directionsResult, directionsStatus){
 function checkSpotsOnRoute ( currentPosition ) {
     $.each( routeData.spots, function (index, value) {
         var distance = haversine( currentPosition.lat(), value.response.latitude, currentPosition.lng(), value.response.longitude);
-        if (distance <= 0.100) {
+        if (!nearbySpotOpened && distance <= 0.100) {
             if ( $.inArray( value, visitedSpots ) < 0 ) {
                 showSpotInfo(value);
                 visitedSpots.push(value);
+                nearbySpotOpened = true;                
             }      
         }
         });
@@ -137,7 +141,7 @@ function showSpotInfo (spot) {
             if (data.meta.code == 200) {
                 $("#spotInfo").html("<b> Spot: </b> " + spot.response.name + "</br> <b>Description:</b>" + spot.response.description +
                     "<br /> <img src ='" + spot.response.images.cover.link +  "' width = '200' height='200'/>");
-                 $("#spotInfo").append("<input type='button' value='Check in here' onclick=checkinAtNearSpot('" + spot.response.id + "') /><input type='button' value='Close' onclick= $('#spotInfo').slideUp(); />");
+                 $("#spotInfo").append("<input type='button' value='Check in here' onclick=checkinAtNearSpot('" + spot.response.id + "') /><input type='button' value='Close' onclick= $('#spotInfo').slideUp();nearbySpotOpened = false; />");
                  $("#spotInfo").append("<div onclick=$('#nearbyList').slideToggle()> Show/Hide nearby spots </div>");
                     
                 $("#spotInfo").append("<div  id = 'nearbyList' class='nearbySpots';/>");
@@ -175,6 +179,7 @@ function checkinAtNearSpot (spotID) {
 function onCheckedInAtNearSpot ( data, textStatus, jqXHR ) {
     alert ("You are checked in!");
     $('#spotInfo').slideUp();
+    nearbySpotOpened = false;
 };
 
 

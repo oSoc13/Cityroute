@@ -121,7 +121,7 @@ function showRoute ( spotID ){
 /**
 * callback function after requesting the routes for a spot
 */
-function onGetRoutes(data, textStatus, jqXHR) {  
+function onGetRoutes(data, textStatus, jqXHR) { 
     $("#routes").html("");
     // for each route
     $("#routes").append("<div style='float:left;' ><input type='button' value='Add new route' onclick='showRouteBuilder()'/> </div>"  + 
@@ -198,6 +198,7 @@ function restart() {
     $("#searchform").hide();
     $("#searchresults").html("");
     window.clearInterval(taskID);
+    nearbySpotOpened = false;
 };
 
 
