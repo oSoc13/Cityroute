@@ -42,7 +42,7 @@ function loginuser(){
         url: url,
         success: onLoggedIn,
         error: function(jqXHR, errorstatus, errorthrown) {
-           alert("Error: " + errorstatus);
+           alert(errorstatus + ": " + errorthrown);
         }
     });
 };
