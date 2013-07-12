@@ -90,45 +90,22 @@ function generateRoute( ) {
 function onRouteCalculated (directionsResult, directionsStatus){
 
     // imagenames for the markerimages
-    var markerArray = ["dd-start","markerA","markerB","markerC","markerD","markerE","markerF","markerG","markerH","markerI","markerJ","markerK"];
-    
-    // the last spot gets also a special icon
-    markerArray[directionsResult.routes[0].waypoint_order.length + 1] = "dd-end";
+    var markerArray = ["markerA","markerB","markerC","markerD","markerE","markerF","markerG","markerH","markerI","markerJ","markerK"];
     dirDisplay.setDirections(directionsResult);
     
-    // add markers to mark the spots
-    $.each(routeData.spots, function(index, value) {
-        var wparray = directionsResult.routes[0].waypoint_order;
-        var newWpArray = [];
-        newWpArray = newWpArray.concat([-1],wparray, [wparray.length]);
-        var markerIndex = newWpArray[index] + 1;
+    
+    var waypoints = directionsResult.routes[0].waypoint_order;
 
-        var iconString = "http://www.google.com/mapfiles/" + markerArray[markerIndex] + ".png";
+    for (var i = 0; i < waypoints.length; ++i ){
+        var spot = routeData.spots[waypoints[i] + 1];
+        var iconString = "http://www.google.com/mapfiles/" + markerArray[i] + ".png";
+        addIcon(spot, iconString);       
+    }      
 
-        var markerOptions = 
-        {   
-            position: new google.maps.LatLng(value.response.latitude, value.response.longitude),
-            title: "Location:" + value.response.name,
-            animation: google.maps.Animation.DROP,
-            clickable: true,
-            icon: iconString
-            
-        }   
-        var marker = new google.maps.Marker(markerOptions);
-        marker.setVisible(true);
-        marker.setMap(googleMap);
-        var infoWindow = new google.maps.InfoWindow();
-        
-        // add a infowindow with the name of the spot
-        infoWindow.setContent("<b>Location:</b>" + value.response.name + "<br /><b>Description:</b>" + value.response.description);
-        
-        google.maps.event.addListener(marker, 'click', function() {
-            infoWindow.open(googleMap, marker);
-        });
-    });
-    
-    
-    
+    addIcon(routeData.spots[0],"http://www.google.com/mapfiles/dd-start.png");
+    addIcon(routeData.spots[waypoints.length + 1],"http://www.google.com/mapfiles/dd-end.png");
+
+   
     
     //console.log(JSON.stringify(directionsResult.routes));
     
@@ -145,13 +122,42 @@ function onRouteCalculated (directionsResult, directionsStatus){
     showRouteMetaInfo(directionsResult.routes[0].waypoint_order);
 };
 
+
+/**
+* function that adds a marker with an icon to the map
+* @param spot: the spot for which a marker will be added
+* @iconString: the location of the icon
+*/
+function addIcon(spot, iconString){
+    var markerOptions = 
+        {   
+            position: new google.maps.LatLng(spot.response.latitude, spot.response.longitude),
+            title: "Location:" + spot.response.name,
+            animation: google.maps.Animation.DROP,
+            clickable: true,
+            icon: iconString
+            
+        }   
+        var marker = new google.maps.Marker(markerOptions);
+        marker.setVisible(true);
+        marker.setMap(googleMap);
+        var infoWindow = new google.maps.InfoWindow();
+        
+        // add a infowindow with the name of the spot
+        infoWindow.setContent("<b>Location:</b>" + spot.response.name + "<br /><b>Description:</b>" + spot.response.description);
+        
+        google.maps.event.addListener(marker, 'click', function() {
+            infoWindow.open(googleMap, marker);
+        });
+};
+
 /**
 * Show extra information in the route view
 * @param the order of the waypoints
 **/
 function showRouteMetaInfo(waypoints){
     $("#routeSpots").slideDown();
-    $("#routeSpotsMeta").html("Routename: " + routeData.name + "<br />Description:<br />" + routeData.description + "<br /><br /><b>Spots: </b>");
+    $("#routeSpotsMeta").html("<b>Routename:</b> " + routeData.name + "<br /><b>Description:</b><br />" + routeData.description + "<br /><br /><b>Spots: </b>");
     $("#routeSpotsList").html("");
     
     //add start point
