@@ -422,3 +422,7 @@ nav a:hover {
     margin-left: 200px;
     float:left;
 }
+
+.inp {
+    width: 100%;
+}
