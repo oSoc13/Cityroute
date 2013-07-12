@@ -30,7 +30,7 @@ function generateRoute( ) {
 
     // initialize google variables
     dirService = new google.maps.DirectionsService();
-    dirDisplay = new google.maps.DirectionsRenderer();
+    dirDisplay = new google.maps.DirectionsRenderer({suppressMarkers : true});
     dirDisplay.setMap(googleMap);
     
     // the waypoints will be stored in this array
@@ -90,6 +90,31 @@ function generateRoute( ) {
 function onRouteCalculated (directionsResult, directionsStatus){
     dirDisplay.setDirections(directionsResult);
     
+    console.log(JSON.stringify(directionsResult.routes.legs));
+    
+    $.each(routeData.spots, function(index, value) {
+
+        var markerOptions = 
+        {   
+            position: new google.maps.LatLng(value.response.latitude, value.response.longitude),
+            title: "Location:" + value.response.name,
+            animation: google.maps.Animation.DROP,
+            clickable: true
+        }   
+        var marker = new google.maps.Marker(markerOptions);
+        marker.setVisible(true);
+        marker.setMap(googleMap);
+        var infoWindow = new google.maps.InfoWindow();
+        infoWindow.setContent("Location: " + value.response.name);
+        
+        google.maps.event.addListener(marker, 'click', function() {
+            infoWindow.open(googleMap, marker);
+        });
+    });
+    
+    
+    
+    
     //console.log(JSON.stringify(directionsResult.routes));
     
     window.clearInterval(taskID);
@@ -102,6 +127,7 @@ function onRouteCalculated (directionsResult, directionsStatus){
             }, function (error) {alert("Error while acquiring current location");},{enableHighAccuracy:true});
     },3000);
 };
+
 
 /**
 * compare your current position with the position of the spots on the route
