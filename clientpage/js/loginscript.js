@@ -13,6 +13,7 @@ $(document).ready( function() {
         $("#routeBuilder").hide();
         $("#restart").show();
         $("#searchform").hide();
+        $("#tabs").hide();
     }
     // User is not logged in
     else {
@@ -26,6 +27,7 @@ $(document).ready( function() {
         $("#loginLink").hide();
         $("#restart").hide();
         $("#searchform").hide();
+        $("#tabs").hide();
      }
 });
 
