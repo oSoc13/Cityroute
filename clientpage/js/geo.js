@@ -82,6 +82,7 @@ function checkIn( spotID ) {
         }
     });
     routeBuilderSetFirstSpot(spotID);
+     $("#map-canvas").height(0);
 };
 
 /**
@@ -155,6 +156,7 @@ function selectRoute(routeID) {
     var url =  "http://" + config_serverAddress + "/routes/" + routeID;
     $("#routes").hide();
     $("#map-canvas").show();
+    $("#map-canvas").height(300);
     $.ajax({
        type: 'GET',
        crossDomain:true,
@@ -188,6 +190,7 @@ function restart() {
     getGeolocation();
     $("#geolocationPar").show(),
     $("#map-canvas").hide();
+    $("#map-canvas").height(0);
     $("#routes").hide();
     $("#spotlist").hide();
     $("#routeBuilder").hide();
