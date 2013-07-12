@@ -15,9 +15,9 @@ var config = require("./auth/dbconfig.js");
 var app = express();
 app.use(express.bodyParser());
 
-/*process.on('uncaughtException', function (exception) {
+process.on('uncaughtException', function (exception) {
     console.log(exception);
-});*/
+});
 
 if (process.env.VCAP_SERVICES) {
     var env = JSON.parse(process.env.VCAP_SERVICES);
