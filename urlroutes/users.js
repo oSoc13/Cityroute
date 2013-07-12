@@ -51,6 +51,7 @@ exports.dropAll = function (request, response) {
     var mongojs = require('mongojs');
     var config = require('../auth/dbconfig');
     var server = require('../server');
+    var utils = require('../utils');
     var db = mongojs(config.dbname);
     var collection = db.collection(config.collection);
     if (request.params.key == config.secret) {

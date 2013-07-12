@@ -163,6 +163,7 @@ searchById = function(id, response, returnResponse)
 parseRouteSpots = function (error, responselib, body, resultArray, spotArray, spotsIdArray, count, docs, response, returnResponse) {
     var requestlib = require('request');
     var gm = require('../lib/googlemaps');
+    var utils = require('../utils');
 
     // on result of a query, parse the result to a JSON
     var jsonResult = JSON.parse(body);
@@ -341,6 +342,7 @@ exports.addRoute = function (request, response) {
     var mongojs = require('mongojs');
     var config = require('../auth/dbconfig');
     var server = require('../server');
+    var utils = require('../utils');
     var db = mongojs(config.dbname);
     var collection = db.collection(config.collection);
     require('mongodb').connect(server.mongourl, function (err, conn) {
