@@ -267,6 +267,7 @@ parseDirectionResults = function (error, responselib, body, resultArray, markers
             "response": {
                 "name": docs.name,
                 "id": docs._id,
+                "description": docs.description,
                 "spots": resultArray,
                 "png": docs.png
             }
@@ -307,6 +308,7 @@ parseDirectionResults = function (error, responselib, body, resultArray, markers
                             "response": {
                                 "name": docs.name,
                                 "id": docs._id,
+                                "description": docs.description,
                                 "spots": resultArray,
                                 "png": gm.staticMap(
                                     '',
