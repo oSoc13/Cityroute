@@ -48,7 +48,7 @@ function loginuser(){
 };
 
 function onLoggedIn(data, textStatus, jqXHR) {
-    if (data != ""){
+    if (data.meta.code == 200){
         $.cookie("token", data.response.token);
         location.reload();
     }

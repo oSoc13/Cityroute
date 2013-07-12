@@ -24,7 +24,22 @@ exports.login = function (request, response) {
             'Content-Type': 'application/json'
         }
     }, function (error, responselib, body) {
-        response.send(body);
+        if (error) {
+            response.send({
+                "meta": utils.createErrorMeta(400, "X_001", "The CityLife API returned an error. Please try again later. " + error),
+                "response": {}
+            });
+        } else {
+            if (typeof body === 'undefined') {
+                response.send({
+                    "meta": utils.createErrorMeta(401, "X_001", "Credentials are not valid."),
+                    "response": {}
+                });
+            }
+            else {
+                response.send(body);
+            }
+        }
     });
 }
 
@@ -41,10 +56,20 @@ exports.dropAll = function (request, response) {
     if (request.params.key == config.secret) {
         require('mongodb').connect(server.mongourl, function (err, conn) {
             collection.drop(function (err, docs) {
-                response.send(JSON.stringify(docs));
+                if (err) {
+                    response.send({
+                        "meta": utils.createErrorMeta(400, "X_001", "Something went wrong with the MongoDB :( : " + err),
+                        "response": {}
+                    });
+                } else {
+                    response.send(JSON.stringify(docs));
+                }
             });
         });
     } else {
-        response.send("You are not SQLrillex.");
+        response.send({
+            "meta": utils.createErrorMeta(403, "X_001", "Incorrect key" + err),
+            "response": {}
+        });
     }
 }
