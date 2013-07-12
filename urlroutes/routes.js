@@ -27,25 +27,32 @@ exports.findRoutesStartingAtSpot = function (request, response) {
             collection.find({ 'points.0': { item: request.query.spot_id } })
                 .toArray(function (err, docs) {
                     // the list of routes starting at Spot is stored in the docs array
-                    collection.find({ $where: 'this.points[this.points.length-1].item == ' + spot_id_safe })
-                        .toArray(function (err, docs2) {
-                            // the list of routes ending at Spot is stored in the docs2 array
-                            // concat these arrays, and return the JSON.
-                            var resultDocs = docs;
-                            resultDocs.concat(docs2);
-
-                            if (err) {
-                                response.send({
-                                    "meta": utils.createErrorMeta(500, "X_001", "Something went wrong with the MongoDB :( : " + err),
-                                    "response": {}
-                                });
-                            } else {
-                                response.send({
-                                    "meta": utils.createOKMeta(),
-                                    "response": {"routes": resultDocs}
-                                });
-                            }
+                    if (err) {
+                        response.send({
+                            "meta": utils.createErrorMeta(500, "X_001", "Something went wrong with the MongoDB :( : " + err),
+                            "response": {}
                         });
+                    }
+                    else {
+                        collection.find({ $where: 'this.points[this.points.length-1].item == ' + spot_id_safe })
+                            .toArray(function (err, docs2) {
+                                if (err) {
+                                    response.send({
+                                        "meta": utils.createErrorMeta(500, "X_001", "Something went wrong with the MongoDB :( : " + err),
+                                        "response": {}
+                                    });
+                                } else {
+                                    // the list of routes ending at Spot is stored in the docs2 array
+                                    // concat these arrays, and return the JSON.
+                                    var resultDocs = docs;
+                                    resultDocs.concat(docs2);
+                                    response.send({
+                                        "meta": utils.createOKMeta(),
+                                        "response": { "routes": resultDocs }
+                                    });
+                                }
+                            });
+                    }
                 });
         });
     }
@@ -83,40 +90,59 @@ searchById = function(id, response, returnResponse)
     var db = mongojs(config.dbname);
     var collection = db.collection(config.collection);
     
+    var resultAmount = 0;
 
     // find the route by its id.
     require('mongodb').connect(server.mongourl, function (err, conn) {
         collection.find({ '_id': id })
             .forEach(function (err, docs) {
-                if (!docs) {
-                    // we visited all docs in the collection
-                    return;
-                }
-
-                // this contains the JSON array with spots
-                var spotArray = docs.points;
-                // initialize parse variables
-                var count = 0;
-                var resultArray = [];
-                var spotsIdArray = [];
-
-                // create a basic array (with no JSON content) containing the spot urls in the right order
-                for (var i = 0; i < spotArray.length; ++i) {
-                    spotsIdArray[i] = parseInt(spotArray[i].item);
-                }
-
-                // for each spot, do a query to the CityLife API for more info about that spot
-                for (var i = 0; i < spotArray.length; ++i) {
-                    requestlib({
-                        uri: citylife.getSpotByIdCall + spotArray[i].item,
-                        method: "GET",
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        }
-                    }, function (error, responselib, body) {
-                        parseRouteSpots(error, responselib, body, resultArray, spotArray, spotsIdArray, count, docs, response, returnResponse);
-                        count++;
+                if (err) {
+                    response.send({
+                        "meta": utils.createErrorMeta(500, "X_001", "Something went wrong with the MongoDB :( : " + err),
+                        "response": {}
                     });
+                } else if (!docs) {
+                    // we visited all docs in the collection
+                    if (resultAmount == 0) {
+                        response.send({
+                            "meta": utils.createErrorMeta(400, "X_001", "The ID was not found. " + err),
+                            "response": {}
+                        });
+                    }
+                } else {
+                    resultAmount++;
+                    // this contains the JSON array with spots
+                    var spotArray = docs.points;
+                    // initialize parse variables
+                    var count = 0;
+                    var resultArray = [];
+                    var spotsIdArray = [];
+
+                    // create a basic array (with no JSON content) containing the spot urls in the right order
+                    for (var i = 0; i < spotArray.length; ++i) {
+                        spotsIdArray[i] = parseInt(spotArray[i].item);
+                    }
+
+                    // for each spot, do a query to the CityLife API for more info about that spot
+                    for (var i = 0; i < spotArray.length; ++i) {
+                        requestlib({
+                            uri: citylife.getSpotByIdCall + spotArray[i].item,
+                            method: "GET",
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            }
+                        }, function (error, responselib, body) {
+                            if (error) {
+                                response.send({
+                                    "meta": utils.createErrorMeta(500, "X_001", "Something went wrong with the CityLife API " + err),
+                                    "response": {}
+                                });
+                            } else {
+                                parseRouteSpots(error, responselib, body, resultArray, spotArray, spotsIdArray, count, docs, response, returnResponse);
+                                count++;
+                            }
+                        });
+                    }
                 }
             });
     });
@@ -194,7 +220,14 @@ parseRouteSpots = function (error, responselib, body, resultArray, spotArray, sp
                 null),
             method: "GET"
         }, function (error, responselib, body) {
-            parseDirectionResults(error, responselib, body, resultArray, markers, docs, response, returnResponse);
+            if (error) {
+                response.send({
+                    "meta": utils.createErrorMeta(500, "X_001", "The Google Directions API is currently unavailable." + err),
+                    "response": {}
+                });
+            } else {
+                parseDirectionResults(error, responselib, body, resultArray, markers, docs, response, returnResponse);
+            }
         });
     }
 }
@@ -314,8 +347,14 @@ exports.addRoute = function (request, response) {
             "description": request.body.description,
             "points": request.body.points
         }, function (err, docs) {
-            searchById(docs[0]._id, response, false);
-            //response.send(JSON.stringify(docs));
+            if (err) {
+                response.send({
+                    "meta": utils.createErrorMeta(500, "X_001", "Something went wrong with the MongoDB :( : " + err),
+                    "response": {}
+                });
+            } else {
+                searchById(docs[0]._id, response, false);
+            }
         });
     });
 };
