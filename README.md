@@ -407,8 +407,6 @@ Example response:
 
 POST /routes
 ------------
-
-Adds a route to the database and generates a static Google Maps png representation.
 Requires form data in a json format, for example:
 <pre>
 {
@@ -419,4 +417,13 @@ Requires form data in a json format, for example:
         {'item':'137'},
         {'item':'7'}
     ]
-}</pre>
+}
+</pre>
+
+Adds a route to the database and generates a static Google Maps png representation.
+
+Example response:
+
+<pre>
+see GET /routes/:id
+</pre>
