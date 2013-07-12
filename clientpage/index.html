@@ -18,6 +18,7 @@
  
 
         <script src="js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+        
         <style>
             html,body {height:100%;}
             #map-canvas { height: 100% }
@@ -91,15 +92,25 @@
 
                 <aside>
                     <h3 id="restart" onclick="restart()">New check-in</h3>
-                    <div id="searchform">
-                    <table>
-                    <tr><td>Search</td><td><input class="inp" id="searchTerm" type="text" /> </td><td><input type="button" value="Search" onclick="search()"/></td></tr>
-                    </table>
-                    <ul id="searchresults">
-                    </ul>
-                    <ul id="suggestions">
-                    </div>
-                    </ul>
+                    <div id="tabs">
+                        <ul>
+                            <li><a href="#tabs-1">Relevant</a></li>
+                            <li><a href="#tabs-2">Search</a></li>
+                        </ul>
+                        
+                        <div id="tabs-1">
+                        <ul id="suggestions">
+                        </ul>
+                        </div>
+                        <div id="tabs-2">
+                        <div id="searchform">
+                        <table>
+                        <tr><td>Search</td><td><input class="inp" id="searchTerm" type="text" /> </td><td><input type="button" value="Search" onclick="search()"/></td></tr>
+                        </table>
+                        </div>
+                        <ul id="searchresults">
+                        </ul>
+                        </div>
                 </aside>
                 <br />
             </div> <!-- #main -->
@@ -130,6 +141,9 @@
             <!-- Refresh list to the end of sort to have a correct display -->
             $( "#sortable" ).bind( "sortstop", function(event, ui) {
               $('#sortable').listview('refresh');
+            });
+            $(function() {
+                $("#tabs").tabs();
             });
         </script>
 
