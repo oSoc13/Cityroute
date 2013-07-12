@@ -3,6 +3,9 @@
 * @copyright: OFKN Belgium
 */
 
+/**
+* on document ready: verify if a user is logged in
+**/
 $(document).ready( function() {
     // User logged in
     if ($.cookie("token") != null) {
@@ -31,6 +34,9 @@ $(document).ready( function() {
      }
 });
 
+/**
+* log a user in
+**/
 function loginuser(){
     var psw = $("#password").val();
     var userName = $("#username").val();
@@ -47,6 +53,9 @@ function loginuser(){
     });
 };
 
+/**
+* callback function when a user is logged in 
+**/
 function onLoggedIn(data, textStatus, jqXHR) {
     if (data.meta.code == 200){
         $.cookie("token", data.response.token);
@@ -56,6 +65,9 @@ function onLoggedIn(data, textStatus, jqXHR) {
         alert("Incorrect username or password");
 };
 
+/**
+* log out
+*/
 function logOut() {
     $.removeCookie("token");
     location.reload();    

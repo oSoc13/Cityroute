@@ -145,23 +145,25 @@ function onRouteCalculated (directionsResult, directionsStatus){
     showRouteMetaInfo(directionsResult.routes[0].waypoint_order);
 };
 
-
+/**
+* Show extra information in the route view
+* @param the order of the waypoints
+**/
 function showRouteMetaInfo(waypoints){
     $("#routeSpots").slideDown();
     $("#routeSpotsMeta").html("Routename: " + routeData.name + "<br />Description:<br />" + routeData.description + "<br /><br /><b>Spots: </b>");
     $("#routeSpotsList").html("");
     
+    //add start point
+    $("#routeSpotsList").append("<li>" + routeData.spots[0].response.name + "</li>");    
     
-    $("#routeSpotsList").append("<li>" + routeData.spots[0].response.name + "</li>");
-
-    
+    // add waypoints
     for (var i = 0; i < waypoints.length; ++i ){
           $("#routeSpotsList").append("<li>" + routeData.spots[waypoints[i] + 1].response.name + "</li>");
     }
+    
+    //add last point
     $("#routeSpotsList").append("<li>" + routeData.spots[waypoints.length + 1].response.name + "</li>");
-    
-    
-    
 };
 
 
