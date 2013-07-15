@@ -5,8 +5,8 @@
     if (sortItems.length >= 10) {
         alert("The current API allows maximum 8 intermediate points.");
     } else {        var spotID = listitems[listID].id.split('_')[1];        var spotName = listitems[listID].innerHTML;        var toAdd = "<li id='spot_" + spotID + "' class='ui-state-default'>" + spotName + "<span onclick=deleteItem('spot_" + spotID + "');>delete</span></li>";        $("#sortable").append(toAdd);        acquireRecommendedSpots(spotID);
-        
-    }    $("#searchresults").html("");};/*** add a suggested spot as next stop in the route* @param the position in the list of suggested spots*/function addSuggestedSpot( listID ) {    var listitems = document.getElementById("suggestions").getElementsByTagName("li");  
+        acquireRelevantSpotsFromSearch(spotID);
+    }    $("#searchresults").html("");};function acquireRelevantSpotsFromSearch(spotID) {    var url = "http://" + config_serverAddress + "/spots/" + spotID;         $.ajax({        type: 'GET',        crossDomain:true,        url: url,        cache: false,        success: onGetRelevantSpotsFromSearch,        error: function(jqXHR, errorstatus, errorthrown) {           alert(errorstatus + ": " + errorthrown);        }    });     };function onGetRelevantSpotsFromSearch(data, textStatus, jqXHR) {    data = JSON.parse(data);    if (data.meta.code == 200) {        acquireSuggestedSpotsByLatLong(data.response.latitude, data.response.longitude);    } else {        alertAPIError(data.meta.message);    }};/*** add a suggested spot as next stop in the route* @param the position in the list of suggested spots*/function addSuggestedSpot( listID ) {    var listitems = document.getElementById("suggestions").getElementsByTagName("li");  
     var sortItems = document.getElementById("sortable").getElementsByTagName("li");  
     
     if (sortItems.length >= 10) {
