@@ -5,3 +5,4 @@
 */
 
 var config_serverAddress = "xxx.xxx.xxx.xxx:XXXX";
+var config_WhatsNextAddress = "xxxxxxxxxxxxxxxxxxxxxxx";
