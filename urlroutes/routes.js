@@ -29,7 +29,7 @@ exports.findRoutesStartingAtSpot = function (request, response) {
                     // the list of routes starting at Spot is stored in the docs array
                     if (err) {
                         response.send({
-                            "meta": utils.createErrorMeta(500, "X_001", "Something went wrong with the MongoDB :( : " + err),
+                            "meta": utils.createErrorMeta(500, "X_001", "Something went wrong with the MongoDB: " + err),
                             "response": {}
                         });
                     }
@@ -38,7 +38,7 @@ exports.findRoutesStartingAtSpot = function (request, response) {
                             .toArray(function (err, docs2) {
                                 if (err) {
                                     response.send({
-                                        "meta": utils.createErrorMeta(500, "X_001", "Something went wrong with the MongoDB :( : " + err),
+                                        "meta": utils.createErrorMeta(500, "X_001", "Something went wrong with the MongoDB: " + err),
                                         "response": {}
                                     });
                                 } else {
@@ -98,7 +98,7 @@ searchById = function(id, response, returnResponse)
             .forEach(function (err, docs) {
                 if (err) {
                     response.send({
-                        "meta": utils.createErrorMeta(500, "X_001", "Something went wrong with the MongoDB :( : " + err),
+                        "meta": utils.createErrorMeta(500, "X_001", "Something went wrong with the MongoDB: " + err),
                         "response": {}
                     });
                 } else if (!docs) {
@@ -132,7 +132,7 @@ searchById = function(id, response, returnResponse)
                                 'Content-Type': 'application/x-www-form-urlencoded'
                             }
                         }, function (error, responselib, body) {
-                            if (error) {
+                            if (responselib.statusCode != 200 || error) {
                                 response.send({
                                     "meta": utils.createErrorMeta(500, "X_001", "Something went wrong with the CityLife API " + err),
                                     "response": {}
@@ -221,9 +221,9 @@ parseRouteSpots = function (error, responselib, body, resultArray, spotArray, sp
                 null),
             method: "GET"
         }, function (error, responselib, body) {
-            if (error) {
+            if (responselib.statusCode != 200 || error) {
                 response.send({
-                    "meta": utils.createErrorMeta(500, "X_001", "The Google Directions API is currently unavailable." + err),
+                    "meta": utils.createErrorMeta(400, "X_001", "The Google Directions API is currently unavailable." + err),
                     "response": {}
                 });
             } else {
@@ -300,7 +300,7 @@ parseDirectionResults = function (error, responselib, body, resultArray, markers
                 function (err, docs2) {
                     if (err) {
                         response.send({
-                            "meta": utils.createErrorMeta(500, "X_001", "Something went wrong with the MongoDB :( : " + err),
+                            "meta": utils.createErrorMeta(500, "X_001", "Something went wrong with the MongoDB: " + err),
                             "response": {}
                         });
                     } else {
@@ -353,7 +353,7 @@ exports.addRoute = function (request, response) {
         }, function (err, docs) {
             if (err) {
                 response.send({
-                    "meta": utils.createErrorMeta(500, "X_001", "Something went wrong with the MongoDB :( : " + err),
+                    "meta": utils.createErrorMeta(500, "X_001", "Something went wrong with the MongoDB: " + err),
                     "response": {}
                 });
             } else {
