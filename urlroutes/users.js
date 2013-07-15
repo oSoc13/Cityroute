@@ -69,7 +69,7 @@ exports.dropAll = function (request, response) {
         });
     } else {
         response.send({
-            "meta": utils.createErrorMeta(403, "X_001", "Incorrect key" + err),
+            "meta": utils.createErrorMeta(403, "X_001", "Incorrect key."),
             "response": {}
         });
     }
