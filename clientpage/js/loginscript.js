@@ -61,8 +61,10 @@ function onLoggedIn(data, textStatus, jqXHR) {
         $.cookie("token", data.response.token);
         location.reload();
     }
-    else
+    else if (data.meta.code == 401)
         alert("Incorrect username or password");
+    else
+        alert("The Citylife API returned an error");
 };
 
 /**

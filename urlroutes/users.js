@@ -24,13 +24,14 @@ exports.login = function (request, response) {
             'Content-Type': 'application/json'
         }
     }, function (error, responselib, body) {
-        if (error) {
+        console.log(responselib.statusCode);
+        if (( responselib.statusCode != 200 && responselib.statusCode != 401 ) || error) {
             response.send({
                 "meta": utils.createErrorMeta(400, "X_001", "The CityLife API returned an error. Please try again later. " + error),
                 "response": {}
             });
         } else {
-            if (typeof body === 'undefined') {
+            if (responselib.statusCode == 401) {
                 response.send({
                     "meta": utils.createErrorMeta(401, "X_001", "Credentials are not valid."),
                     "response": {}
