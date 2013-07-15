@@ -24,7 +24,6 @@ exports.login = function (request, response) {
             'Content-Type': 'application/json'
         }
     }, function (error, responselib, body) {
-        console.log(responselib.statusCode);
         if (( responselib.statusCode != 200 && responselib.statusCode != 401 ) || error) {
             response.send({
                 "meta": utils.createErrorMeta(400, "X_001", "The CityLife API returned an error. Please try again later. " + error),

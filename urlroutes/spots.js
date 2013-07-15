@@ -38,7 +38,7 @@ exports.findRelevantSpots = function (request, response) {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         }, function (error, responselib, body) {
-            if (error) {
+            if (responselib.statusCode != 200 || error) {
                 response.send({
                     "meta": utils.createErrorMeta(400, "X_001", "The CityLife API returned an error. Please try again later. " + error),
                     "response": {}
@@ -106,7 +106,7 @@ exports.findSpotsByLatLong = function (request, response) {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         }, function (error, responselib, body) {
-            if (error) {
+            if (responselib.statusCode != 200 || error) {
                 // bad request
                 response.send({
                     "meta": utils.createErrorMeta(400, "X_001", "The CityLife API returned an error. Please try again later. " + error),
@@ -176,7 +176,8 @@ exports.checkIn = function (request, response) {
                 'Content-Type': 'application/json'
             }
         }, function (error, responselib, body) {
-            if (error) {
+            if (responselib.statusCode != 200 || error) {
+                console.log(body);
                 response.send({
                     "meta": utils.createErrorMeta(400, "X_001", "The CityLife API returned an error. Please try again later. " + error),
                     "response": {}
@@ -236,7 +237,7 @@ exports.search = function (request, response) {
                 'Content-Type': 'application/json'
             }
         }, function (error, responselib, body) {
-            if (error) {
+            if (responselib.statusCode != 200 || error) {
                 response.send({
                     "meta": utils.createErrorMeta(400, "X_001", "The CityLife API returned an error. Please try again later. " + error),
                     "response": {}
@@ -276,7 +277,7 @@ exports.findById = function (request, response) {
             'Content-Type': 'application/x-www-form-urlencoded'
         }
     }, function (error, responselib, body) {
-        if (error) {
+        if (responselib.statusCode != 200 || error) {
             response.send({
                 "meta": utils.createErrorMeta(400, "X_001", "The CityLife API returned an error. Please try again later. " + error),
                 "response": {}
