@@ -106,6 +106,7 @@ function showRoute ( spotID ){
    $("#spotListTable").html("");
    
    $("#routes").show();
+   $("#aside").hide();
     var url =  "http://" + config_serverAddress + "/routes/?spot_id=" + spotID;
     $.ajax({
         type: 'GET',

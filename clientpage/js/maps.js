@@ -19,6 +19,7 @@ var visitedSpots = [];
 * Generate a given route and show it on the map
 */
 function generateRoute( ) {
+    $("#aside").show();
     var numSpots = routeData.spots.length -1;
     var originLat = routeData.spots[0].response.latitude;
     var originLong = routeData.spots[0].response.longitude;
