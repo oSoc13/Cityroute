@@ -21,7 +21,7 @@ function getGeolocation() {
     navigator.geolocation.getCurrentPosition(onLocationKnown,function(err){
         alert("Could not request geolocation");
         },
-        {timeout:3000});
+        {timeout:10000});
 };
 
 /**
@@ -197,6 +197,7 @@ function restart() {
     $("#sortableInput").html("");
     $("#spotListTable").html("");
     $("#suggestions").html("");
+    $("#recommended").html("");
     $("#spotInfo").hide();
     $("#routeSpots").hide();
     $("#searchform").hide();
