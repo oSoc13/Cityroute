@@ -134,7 +134,7 @@ searchById = function(id, response, returnResponse)
                         }, function (error, responselib, body) {
                             if (responselib.statusCode != 200 || error) {
                                 response.send({
-                                    "meta": utils.createErrorMeta(500, "X_001", "Something went wrong with the CityLife API " + err),
+                                    "meta": utils.createErrorMeta(500, "X_001", "Something went wrong with the CityLife API " + error),
                                     "response": {}
                                 });
                             } else {
@@ -223,7 +223,7 @@ parseRouteSpots = function (error, responselib, body, resultArray, spotArray, sp
         }, function (error, responselib, body) {
             if (responselib.statusCode != 200 || error) {
                 response.send({
-                    "meta": utils.createErrorMeta(400, "X_001", "The Google Directions API is currently unavailable." + err),
+                    "meta": utils.createErrorMeta(400, "X_001", "The Google Directions API is currently unavailable." + error),
                     "response": {}
                 });
             } else {
