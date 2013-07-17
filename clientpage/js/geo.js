@@ -88,7 +88,8 @@ function checkIn( spotID ) {
 /**
 * callback function when checked in
 */
-function onCheckedIn(data, textStatus, jqXHR) { 
+function onCheckedIn(data, textStatus, jqXHR) {
+    $("#generateTab").show();
     showRoute(data.response.data.spot_id);
 }
 
@@ -204,6 +205,8 @@ function restart() {
     $("#searchform").hide();
     $("#tabs").hide();
     $("#searchresults").html("");
+    $("#generate").hide();
+    $("#generateTab").hide();
     window.clearInterval(taskID);
     nearbySpotOpened = false;
 };

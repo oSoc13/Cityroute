@@ -17,6 +17,8 @@ $(document).ready( function() {
         $("#restart").show();
         $("#searchform").hide();
         $("#tabs").hide();
+        $("#generate").hide();
+        $("#generateTab").hide();
     }
     // User is not logged in
     else {
@@ -31,6 +33,8 @@ $(document).ready( function() {
         $("#restart").hide();
         $("#searchform").hide();
         $("#tabs").hide();
+        $("#generate").hide();
+        $("#generateTab").hide();
      }
 });
 

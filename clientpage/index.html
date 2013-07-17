@@ -38,6 +38,7 @@
             #searchresults { list-style-type: none; margin: 0; padding: 0;  }
             #searchresults li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1em;  }
             #searchresults li span { position: absolute; margin-left: -1.3em; }
+            #generate .ui-btn-inner {display:none;}
         </style>
     </head>
     <body style="height: 100%">
@@ -53,6 +54,7 @@
                         <!--<li><a href="#">Check In</a></li>-->
                         <li id= "loginLink"><a href="#" onclick="logOut();">Log Out</a></li>
                         <li id="restart" onclick="restart()"><a href="#">New check-in</a></li>
+                        <li id="generateTab" onclick="showGenerate()"><a href="#">Generate Route</a></li>
                     </ul>
                 </nav>
             </header>
@@ -67,6 +69,22 @@
                             <table id="spotListTable"></table>
                         </div>
                     </header>
+                     <section id="generate">
+                        <div>
+                        Generate: 
+                         <select data-role = "none" id = "channelList">
+                           <option value = "shoppingplaces">Shopping</option>
+                           <option value = "diningplaces">Dining</option>
+                           <option value = "overnightingplaces">Hotels</option>      
+                           <option value = "trendingspots">Trending Spots</option>    
+                           <option value = "groceryplaces">Groceries</option>    
+                           <option value = "cultureplaces">Culture</option>    
+                           <option value = "havingfun">Fun places</option>    
+                           <option value = "publictransportplaces">Public Transport</option>    
+                        </select>
+                        <input data-role = "none" type="button" value="Generate" onclick="autoGenerateRoute()"></input>
+                        </div>
+                    </section>
                     <div id = "login">
                         <form>
                         <table>
@@ -93,6 +111,9 @@
                     <section style="height: 100%">
                         <div id="map-canvas" style="width: 100%; height: 300px;;"></div>
                     </section>
+                    
+                    
+                   
                 </article>
 
                 <aside id="aside">
@@ -140,6 +161,7 @@
         <script type="text/javascript" src="js/geo.js"></script>
         <script type="text/javascript" src="js/routebuilder.js"></script>
         <script type="text/javascript" src="js/loginscript.js"></script>
+        <script type="text/javascript" src="js/generate.js"></script>
         <script type="text/javascript" src="js/maps.js"></script>
         <script type="text/javascript" src="js/jquery.base64.js"></script>
         <script type="text/javascript" src="js/jquery.cookie.js"></script>
