@@ -406,6 +406,18 @@ Example response:
 }
 </pre>
 
+GET /routes/generate/:channelname
+---------------------------------
+Requires *:channelname* (name of the CityLife channel which will be used to generate the route), *token*, *latitude*, *longitude*, *spot_id* (starting spot) and *radius* (in km).
+
+Generates a route based on the starting spot, radius and chosen channel, personalized by profiling data of the CityLife API.
+
+Example response:
+
+<pre>
+// see GET /routes/:id
+</pre>
+
 POST /routes
 ------------
 Requires form data in a json format, for example:

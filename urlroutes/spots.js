@@ -75,7 +75,7 @@ exports.findRelevantSpots = function (request, response) {
 /**
  * Find the most relevant spot in a radius for a certain channel and location
  */
-function findSpotByChannel (lat, long, name, radius, spot_id, jsonResult, response) {
+function findSpotByChannel (lat, long, name, radius, spot_id, jsonResult, response, token) {
     var utils = require("../utils");
     var https = require('https');
     var querystring = require('querystring');
@@ -94,7 +94,8 @@ function findSpotByChannel (lat, long, name, radius, spot_id, jsonResult, respon
             "longitude": long,
             "latitude": lat,
             "time": "" + now,
-            "params": '{ "channel": "' + name + '" }'
+            "params": '{ "channel": "' + name + '" }',
+            "bearer_token": token
         },
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
