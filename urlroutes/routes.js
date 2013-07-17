@@ -66,6 +66,19 @@ exports.findRoutesStartingAtSpot = function (request, response) {
 }
 
 /**
+ * lat long spot_id channel_name radius
+ */
+exports.generateRoute = function (request, response) {
+    var spotsFile = require("./spots");
+
+    if (typeof request.query.latitude !== undefined && typeof request.query.longitude !== undefined && typeof request.query.spot_id !== undefined && typeof request.query.radius !== undefined) {
+        jsonResult = {};
+        spotsFile.findSpotByChannel(request.query.latitude, request.query.longitude, request.params.channelname, request.query.radius, request.query.spot_id, jsonResult, response);
+    }
+    
+}
+
+/**
  * Returns the details of of a route, including details of each Spot on the Route.
  * @param id the id of a Route
  * @return json representation of the Route

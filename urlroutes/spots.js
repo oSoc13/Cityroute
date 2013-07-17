@@ -73,6 +73,61 @@ exports.findRelevantSpots = function (request, response) {
 }
 
 /**
+ * Find the most relevant spot in a radius for a certain channel and location
+ */
+exports.findSpotByChannel = function (lat, long, name, radius, spot_id, jsonResult, response) {
+    var utils = require("../utils");
+    var https = require('https');
+    var querystring = require('querystring');
+    var requestlib = require('request');
+    var citylife = require('../auth/citylife');
+    var gm = require('../lib/googlemaps');
+
+    // date time is also required for the City Life API, so get it in the right format
+    var time = new Date();
+    var now = "" + time.getFullYear() + "-" + utils.addZero(time.getMonth()) + "-" + utils.addZero(time.getDay()) + " " + utils.addZero(time.getHours()) + ":" + utils.addZero(time.getMinutes()) + ":" + utils.addZero(time.getSeconds());
+
+    requestlib({
+        uri: citylife.discoverChannelCall,
+        method: "POST",
+        form: {
+            "longitude": long,
+            "latitude": lat,
+            "time": "" + now,
+            "params": '{ "channel": "' + name + '" }'
+        },
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    }, function (error, responselib, body) {
+        if (responselib.statusCode != 200 || error) {
+            // bad request
+            console.log(body);
+            response.send({
+                "meta": utils.createErrorMeta(400, "X_001", "The CityLife API returned an error. Please try again later. " + error),
+                "response": {}
+            });
+        } else {
+            var body = JSON.parse(body);
+
+            for (var i = 0; i < body.response.data.items.length; ++i) {
+                if (parseInt(body.response.data.items[i].meta_info.distance) < radius) {
+                    var result = {
+                        "id": body.response.data.items[i].link.params.id,
+                        "distance": body.response.data.items[i].meta_info.distance,
+                        "latitude": body.response.data.items[i].meta_info.latitude,
+                        "longitude": body.response.data.items[i].meta_info.longitude
+                    }
+                    jsonResult = result;
+                    response.send(jsonResult);
+                }
+            }
+            response.send(jsonResult);
+        }
+    });
+};
+
+/**
  * Returns a list of nearby Spots.
  * @param latitude the latitude of the location
  * @param longitude the longitude of the location
