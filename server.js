@@ -65,7 +65,7 @@ app.get("/users/:key", users.dropAll);
 // requires latitude & longitude as url params
 app.get("/spots", spots.findSpotsByLatLong);
 // requires id
-app.get("/spots/channel/:name", spots.findSpotsByChannel);
+//app.get("/spots/channel/:name", spots.findSpotsByChannel);
 app.get("/spots/checkin", spots.checkIn);
 app.get("/spots/relevant", spots.findRelevantSpots);
 app.get("/spots/search", spots.search);
@@ -76,6 +76,7 @@ app.get("/spots/:id", spots.findById);
 app.get("/routes", routes.findRoutesStartingAtSpot);
 // requires name, description and list of spot_id's
 app.post("/routes", routes.addRoute);
+app.get("/routes/generate/:channelname", routes.generateRoute);
 // requires ID
 app.get("/routes/:id", routes.findById);
 
