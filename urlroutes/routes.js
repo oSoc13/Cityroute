@@ -72,7 +72,9 @@ exports.generateRoute = function (request, response) {
     var spotsFile = require("./spots");
 
     if (typeof request.query.latitude !== undefined && typeof request.query.longitude !== undefined && typeof request.query.spot_id !== undefined && typeof request.query.radius !== undefined) {
-        jsonResult = {};
+        jsonResult = [{
+            "item": "" + parseInt(request.query.spot_id)
+        }];
         spotsFile.findSpotByChannel(request.query.latitude, request.query.longitude, request.params.channelname, request.query.radius, request.query.spot_id, jsonResult, response);
     }
     
@@ -376,3 +378,4 @@ exports.addRoute = function (request, response) {
     });
 };
 
+exports.searchById = searchById;

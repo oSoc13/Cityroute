@@ -75,7 +75,7 @@ exports.findRelevantSpots = function (request, response) {
 /**
  * Find the most relevant spot in a radius for a certain channel and location
  */
-exports.findSpotByChannel = function (lat, long, name, radius, spot_id, jsonResult, response) {
+function findSpotByChannel (lat, long, name, radius, spot_id, jsonResult, response) {
     var utils = require("../utils");
     var https = require('https');
     var querystring = require('querystring');
@@ -112,20 +112,58 @@ exports.findSpotByChannel = function (lat, long, name, radius, spot_id, jsonResu
 
             for (var i = 0; i < body.response.data.items.length; ++i) {
                 if (parseInt(body.response.data.items[i].meta_info.distance) < radius) {
-                    var result = {
-                        "id": body.response.data.items[i].link.params.id,
-                        "distance": body.response.data.items[i].meta_info.distance,
-                        "latitude": body.response.data.items[i].meta_info.latitude,
-                        "longitude": body.response.data.items[i].meta_info.longitude
+                    var found = false;
+                    for (var j = 0; j < jsonResult.length; ++j) {
+                        if (parseInt(jsonResult[j].item) == body.response.data.items[i].link.params.id) {
+                            found = true;
+                        }
                     }
-                    jsonResult = result;
-                    response.send(jsonResult);
+                    if (!found) {
+                        var result = {
+                            "item": '' + body.response.data.items[i].link.params.id
+                        }
+                        jsonResult.push(result);
+                        if (jsonResult.length >= 10) {
+                            saveGeneratedRoute(jsonResult, name, response);
+                        } else {
+                            findSpotByChannel(body.response.data.items[i].meta_info.latitude, body.response.data.items[i].meta_info.longitude, name, radius, result.item, jsonResult, response);
+                        }
+                        return;
+                    }
                 }
             }
-            response.send(jsonResult);
+            saveGeneratedRoute(jsonResult, name, response);
         }
     });
 };
+
+saveGeneratedRoute = function (jsonResult, name, response) {
+    var mongojs = require('mongojs');
+    var config = require('../auth/dbconfig');
+    var server = require('../server');
+    var utils = require('../utils');
+    var db = mongojs(config.dbname);
+    var collection = db.collection(config.collection);
+    var routesFile = require('./routes');
+    require('mongodb').connect(server.mongourl, function (err, conn) {
+        collection.insert({
+            'name': 'Generated ' + name,
+            'description': 'This is a generated route.',
+            'points': jsonResult
+        }, function (err, docs) {
+            if (err) {
+                response.send({
+                    "meta": utils.createErrorMeta(500, "X_001", "Something went wrong with the MongoDB: " + err),
+                    "response": {}
+                });
+            } else {
+                routesFile.searchById(docs[0]._id, response, false);
+            }
+        });
+    });
+    
+    
+}
 
 /**
  * Returns a list of nearby Spots.
@@ -345,3 +383,4 @@ exports.findById = function (request, response) {
     });
 };
 
+exports.findSpotByChannel = findSpotByChannel;
