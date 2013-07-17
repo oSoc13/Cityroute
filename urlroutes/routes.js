@@ -71,7 +71,7 @@ exports.findRoutesStartingAtSpot = function (request, response) {
 exports.generateRoute = function (request, response) {
     var spotsFile = require("./spots");
 
-    if (typeof request.query.latitude !== undefined && typeof request.query.longitude !== undefined && typeof request.query.spot_id !== undefined && typeof request.query.radius !== undefined) {
+    if (typeof request.query.token !== undefined && typeof request.query.latitude !== undefined && typeof request.query.longitude !== undefined && typeof request.query.spot_id !== undefined && typeof request.query.radius !== undefined) {
         jsonResult = [{
             "item": "" + parseInt(request.query.spot_id)
         }];
