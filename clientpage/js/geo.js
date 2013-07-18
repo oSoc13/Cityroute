@@ -89,8 +89,13 @@ function checkIn( spotID ) {
 * callback function when checked in
 */
 function onCheckedIn(data, textStatus, jqXHR) {
-    $("#generateTab").show();
-    showRoute(data.response.data.spot_id);
+    if (data.meta.code == 200) {
+        $("#generateTab").show();
+        showRoute(data.response.data.spot_id);
+    } else {
+        alert("The Citylife API returned an error. This could be caused by an expired session. Please log in again");
+        logOut();
+    }    
 }
 
 /**
@@ -185,30 +190,6 @@ function onGetRouteByID(data, textStatus, jqXHR) {
 };
 
 
-/**
-* restart the web-application
-*/
-function restart() {
-    getGeolocation();
-    $("#geolocationPar").show(),
-    $("#map-canvas").hide();
-    $("#map-canvas").height(0);
-    $("#routes").hide();
-    $("#spotlist").hide();
-    $("#routeBuilder").hide();
-    $("#sortableInput").html("");
-    $("#spotListTable").html("");
-    $("#suggestions").html("");
-    $("#recommended").html("");
-    $("#spotInfo").hide();
-    $("#routeSpots").hide();
-    $("#searchform").hide();
-    $("#tabs").hide();
-    $("#searchresults").html("");
-    $("#generate").hide();
-    $("#generateTab").hide();
-    window.clearInterval(taskID);
-    nearbySpotOpened = false;
-};
+
 
 

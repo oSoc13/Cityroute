@@ -1,6 +1,7 @@
 /**
 * @author: Mathias Raets
 * @copyright: OFKN Belgium
+* this file contains maps-implementation
 */
 
 
@@ -10,6 +11,7 @@ var googleMap;
 var myMarker;
 var taskID;
 var nearbySpotOpened = false;
+var CHECKIN_DISTANCE_TRESHOLD = 0.100; // the range when a pop-up for a check-in pops up (in km)
 
 var visitedSpots = [];
 
@@ -67,16 +69,12 @@ function generateRoute( ) {
                   scale: 5,
                   strokeColor: "black",
                   strokeWeight: 1
-                };
-
-            
-            
+                };          
             var markerOptions = 
             {   
                 position: latLong,
                 title:"My Position",
                 icon: circle
-
             }   
             myMarker = new google.maps.Marker(markerOptions);
             myMarker.setVisible(true);
@@ -106,10 +104,7 @@ function onRouteCalculated (directionsResult, directionsStatus){
     addIcon(routeData.spots[0],"http://www.google.com/mapfiles/dd-start.png");
     addIcon(routeData.spots[waypoints.length + 1],"http://www.google.com/mapfiles/dd-end.png");
 
-   
-    
-    //console.log(JSON.stringify(directionsResult.routes));
-    
+       
     window.clearInterval(taskID);
     /* Check each 3 seconds for an update of the position */
     taskID = window.setInterval(function(){
@@ -136,8 +131,7 @@ function addIcon(spot, iconString){
             title: "Location:" + spot.response.name,
             animation: google.maps.Animation.DROP,
             clickable: true,
-            icon: iconString
-            
+            icon: iconString            
         }   
         var marker = new google.maps.Marker(markerOptions);
         marker.setVisible(true);
@@ -181,7 +175,7 @@ function showRouteMetaInfo(waypoints){
 function checkSpotsOnRoute ( currentPosition ) {
     $.each( routeData.spots, function (index, value) {
         var distance = haversine( currentPosition.lat(), value.response.latitude, currentPosition.lng(), value.response.longitude);
-        if (!nearbySpotOpened && distance <= 0.100) {
+        if (!nearbySpotOpened && distance <= CHECKIN_DISTANCE_TRESHOLD) {
             if ( $.inArray( value, visitedSpots ) < 0 ) {
                 showSpotInfo(value);
                 visitedSpots.push(value);
@@ -192,7 +186,7 @@ function checkSpotsOnRoute ( currentPosition ) {
 };
 
 /**
-* show information about a nearby spot
+* show information about nearby spots
 * @param spot the nearby spot
 */
 function showSpotInfo (spot) {
@@ -203,38 +197,56 @@ function showSpotInfo (spot) {
     
     var url =  "http://" + config_serverAddress + "/spots?latitude=" + latitude + "&longitude=" + longitude;
     
+    // send a request to the nodeJS API to get information about nearby spots
+    // parameters: latitude and longitude
+    // returns: list of nearby spots    
+    
     $.ajax({
        type: 'GET',
        crossDomain:true,
         url: url,
         cache: false,
-        success: function (data, textStatus, jqXHR) {
-            if (data.meta.code == 200) {
-                $("#spotInfo").html("<b> Spot: </b> " + spot.response.name + "</br> <b>Description:</b>" + spot.response.description +
-                    "<br /> <img src ='" + spot.response.images.cover.link +  "' width = '200' height='200'/>");
-                 $("#spotInfo").append("<input type='button' value='Check in here' onclick=checkinAtNearSpot('" + spot.response.id + "') /><input type='button' value='Close' onclick= $('#spotInfo').slideUp();nearbySpotOpened = false; />");
-                 $("#spotInfo").append("<div onclick=$('#nearbyList').slideToggle()> Show/Hide nearby spots </div>");
-                    
-                $("#spotInfo").append("<div  id = 'nearbyList' class='nearbySpots';/>");
-                $.each(data.response.data.items, function (index, value) {
-                    if (value.link.params.id != spot.response.id)
-                        //$("#spotInfo").append("<li>" + value.title + "</li>");
-                        $("#nearbyList").append("<div>" + value.title + "<br/><img width='150' height='150' src='" + value.mapspng + "'</div>");
-                });          
-                $('#nearbyList').hide();
-                $("#spotInfo").slideDown();
-            } else {
-                alertAPIError(data.meta.message);
-            }
-        },
+        success: function (data, textStatus, jqXHR) {onGetNearbySpotsInfo(data, textStatus, jqXHR, spot);}, 
         error: function(jqXHR, errorstatus, errorthrown) {
            alert("Error: " + errorstatus);
         }
     });    
 };
 
+/**
+* callback function when acquiring info about nearby spots
+* inject a lot of HTML 
+**/
+function onGetNearbySpotsInfo(data, textStatus, jqXHR, spot) {
+    if (data.meta.code == 200) {
+        $("#spotInfo").html("<b> Spot: </b> " + spot.response.name + "</br> <b>Description:</b>" + spot.response.description +
+            "<br /> <img src ='" + spot.response.images.cover.link +  "' width = '200' height='200'/>");
+         $("#spotInfo").append("<input type='button' value='Check in here' onclick=checkinAtNearSpot('" + spot.response.id + "') /><input type='button' value='Close' onclick= $('#spotInfo').slideUp();nearbySpotOpened = false; />");
+         $("#spotInfo").append("<div onclick=$('#nearbyList').slideToggle()> Show/Hide nearby spots </div>");
+            
+        $("#spotInfo").append("<div  id = 'nearbyList' class='nearbySpots';/>");
+        $.each(data.response.data.items, function (index, value) {
+            if (value.link.params.id != spot.response.id)
+                $("#nearbyList").append("<div>" + value.title + "<br/><img width='150' height='150' src='" + value.mapspng + "'</div>");
+        });          
+        $('#nearbyList').hide();
+        $("#spotInfo").slideDown();
+    } else {
+        alertAPIError(data.meta.message);
+    }        
+};
+
+/**
+* check in at a spot on your current route
+* @param spotID the spot where you want to check in at 
+*/
 function checkinAtNearSpot (spotID) {
     var url =  "http://" + config_serverAddress + "/spots/checkin?spot_id=" + spotID + "&token=" + $.cookie("token");
+    
+    // send a request to the nodeJS API to check in at a spot
+    // parameters: bearer token, spotID
+    // returns: confirmation of your checkin, spot ID
+    
     $.ajax({
        type: 'GET',
        crossDomain:true,
@@ -247,6 +259,9 @@ function checkinAtNearSpot (spotID) {
     });
 };
 
+/**
+* callback function after check in
+*/
 function onCheckedInAtNearSpot ( data, textStatus, jqXHR ) {
     alert ("You are checked in!");
     $('#spotInfo').slideUp();
@@ -307,8 +322,6 @@ function toRad(value) {
     /** Converts numeric degrees to radians */
     return value * Math.PI / 180;
 };
-
-
 
 /**
 * load google maps
