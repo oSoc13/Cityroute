@@ -3,22 +3,27 @@
 
 // Node.js entry point
 
+// declare external files
 var express = require("express");
 var utils = require("./utils");
-// bind spot requests to spots.js
 var users = require("./urlroutes/users");
 var spots = require("./urlroutes/spots");
 var routes = require("./urlroutes/routes");
-
 var config = require("./auth/dbconfig.js");
 
+// use express and its bodyParser for POST requests.
 var app = express();
 app.use(express.bodyParser());
 
+// prevent server death in case of uncaught exceptions
 process.on('uncaughtException', function (exception) {
     console.log(exception);
 });
 
+/**
+ * Our hosting service provides database information in the VCAP_SERVICES environment variable.
+ * If it does not exist, we'll connect to a localhost MongoDB.
+ */
 if (process.env.VCAP_SERVICES) {
     var env = JSON.parse(process.env.VCAP_SERVICES);
     var mongo = env['mongodb-1.8'][0]['credentials'];
@@ -33,6 +38,10 @@ else {
         "db": config.dbname
     }
 }
+
+/**
+ * Building the URL to the MongoDB.
+ */
 var generate_mongo_url = function (obj) {
     obj.hostname = (obj.hostname || 'localhost');
     obj.port = (obj.port || 27017);
@@ -44,11 +53,14 @@ var generate_mongo_url = function (obj) {
         return "mongodb://" + obj.hostname + ":" + obj.port + "/" + obj.db;
     }
 }
-var mongourl = generate_mongo_url(mongo);
 
+
+var mongourl = generate_mongo_url(mongo);
 exports.mongourl = mongourl;
 
-
+/**
+ * Fix cross-domain requests errors, this should probably be cleaned up before a real release.
+ */
 app.all('/*', function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "X-Requested-With");
@@ -56,31 +68,25 @@ app.all('/*', function (req, res, next) {
     next();
 });
 
+
 // define the users API url routes.
-// requires a Base64 encoded representation of username:password
 app.get("/users/login/:base64", users.login);
 app.get("/users/:key", users.dropAll);
 
 // define the spots API url routes.
-// requires latitude & longitude as url params
 app.get("/spots", spots.findSpotsByLatLong);
-// requires id
-//app.get("/spots/channel/:name", spots.findSpotsByChannel);
 app.get("/spots/checkin", spots.checkIn);
 app.get("/spots/relevant", spots.findRelevantSpots);
 app.get("/spots/search", spots.search);
 app.get("/spots/:id", spots.findById);
 
 // define the routes API url routes.
-// requires spot_id as url param
 app.get("/routes", routes.findRoutesStartingAtSpot);
-// requires name, description and list of spot_id's
 app.post("/routes", routes.addRoute);
 app.get("/routes/generate/:channelname", routes.generateRoute);
-// requires ID
 app.get("/routes/:id", routes.findById);
 
 
+// start server on port 1337
 console.log("Listening on port 1337...");
-// start server
 app.listen(1337);
