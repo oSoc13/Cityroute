@@ -73,6 +73,7 @@ app.all('/*', function (req, res, next) {
 
 // define the users API url routes.
 app.get("/users/login/:base64", users.login);
+app.get("/users/logout/:token", users.logout);
 app.get("/users/:key", users.dropAll);
 
 // define the spots API url routes.
