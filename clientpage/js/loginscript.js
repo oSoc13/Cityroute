@@ -4,41 +4,6 @@
 */
 
 /**
-* on document ready: verify if a user is logged in
-**/
-$(document).ready( function() {
-    // User logged in
-    if ($.cookie("token") != null) {
-        $("#login").hide();
-        $("#geolocationPar").show();
-        getGeolocation();
-        $("#loginLink").show();
-        $("#routeBuilder").hide();
-        $("#restart").show();
-        $("#searchform").hide();
-        $("#tabs").hide();
-        $("#generate").hide();
-        $("#generateTab").hide();
-    }
-    // User is not logged in
-    else {
-        $("#geolocationPar").hide(),
-        $("#map-canvas").hide();
-        $("#routes").hide();
-        $("#spotlist").hide();
-        $("#routeBuilder").hide();
-        $("#spotlistTable").html("");
-        $("#login").show();
-        $("#loginLink").hide();
-        $("#restart").hide();
-        $("#searchform").hide();
-        $("#tabs").hide();
-        $("#generate").hide();
-        $("#generateTab").hide();
-     }
-});
-
-/**
 * log a user in
 **/
 function loginuser(){
