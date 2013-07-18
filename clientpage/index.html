@@ -80,7 +80,7 @@
                     <!-- The menu to auto-generate a route -->
                      <section id="generate">
                         <div>
-                        Generate: 
+                        Generate a route containing ONE channel: 
                         <!-- The possible channels are hard-coded -->
                          <select data-role = "none" id = "channelList">
                            <option value = "shoppingplaces">Shopping</option>
@@ -93,6 +93,25 @@
                            <option value = "publictransportplaces">Public Transport</option>    
                         </select>
                         <input data-role = "none" type="button" value="Generate" onclick="autoGenerateRoute()"></input>
+                        </div>
+                        <div>
+                        <p>
+                        Generate a route with the following channels:
+                        </p>
+                         <select data-role = "none" id = "channelList_add">
+                            <option value = "shoppingplaces">Shopping</option>
+                           <option value = "diningplaces">Dining</option>
+                           <option value = "overnightingplaces">Hotels</option>      
+                           <option value = "trendingspots">Trending Spots</option>    
+                           <option value = "groceryplaces">Groceries</option>    
+                           <option value = "cultureplaces">Culture</option>    
+                           <option value = "havingfun">Fun places</option>    
+                           <option value = "publictransportplaces">Public Transport</option>    
+                        </select>
+                        
+                        <input data-role = "none" type="button" value="Add Channel" onclick="addChannel();"></input>
+                        <ul id="channels"></ul>
+                        <input data-role = "none" type="button" value="Generate with these channels" onclick="addGeneratedChannel();"></input>
                         </div>
                     </section>
                     <section id="loader">
