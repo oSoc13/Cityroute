@@ -87,7 +87,7 @@ exports.findRelevantSpots = function (request, response) {
  * @param response allows us to return a response from within this function
  * @param token the bearer_token of the user
  */
-function findSpotByChannel (lat, long, name, radius, jsonResult, response, token) {
+function findSpotByChannel (lat, long, names, radius, jsonResult, response, token) {
     var utils = require("../utils");
     var https = require('https');
     var querystring = require('querystring');
@@ -99,6 +99,20 @@ function findSpotByChannel (lat, long, name, radius, jsonResult, response, token
     var time = new Date();
     var now = "" + time.getFullYear() + "-" + utils.addZero(time.getMonth()) + "-" + utils.addZero(time.getDay()) + " " + utils.addZero(time.getHours()) + ":" + utils.addZero(time.getMinutes()) + ":" + utils.addZero(time.getSeconds());
 
+    var namesArray = names.split("|");
+
+    if (namesArray.length > 1 && jsonResult.length - 1 >= namesArray) {
+        saveGeneratedRoute(jsonResult, namesArray[0], response);
+        return;
+    }
+
+    var nextChannelName = "";
+    if (namesArray.length > 1) {
+        nextChannelName = namesArray[jsonResult.length - 1];
+    } else {
+        nextChannelName = namesArray[0];
+    }
+
     // do call to the CityLife API
     requestlib({
         uri: citylife.discoverChannelCall,
@@ -107,7 +121,7 @@ function findSpotByChannel (lat, long, name, radius, jsonResult, response, token
             "longitude": long,
             "latitude": lat,
             "time": "" + now,
-            "params": '{ "channel": "' + name + '" }',
+            "params": '{ "channel": "' + nextChannelName + '" }',
             "bearer_token": token
         },
         headers: {
@@ -146,10 +160,10 @@ function findSpotByChannel (lat, long, name, radius, jsonResult, response, token
                         jsonResult.push(result);
                         // if the route is at its max length, save it
                         if (jsonResult.length >= 10) {
-                            saveGeneratedRoute(jsonResult, name, response);
+                            saveGeneratedRoute(jsonResult, namesArray[0], response);
                         } else {
                             // if route can be longer, execute this function again but with parameters from the last spot added
-                            findSpotByChannel(body.response.data.items[i].meta_info.latitude, body.response.data.items[i].meta_info.longitude, name, radius, jsonResult, response);
+                            findSpotByChannel(body.response.data.items[i].meta_info.latitude, body.response.data.items[i].meta_info.longitude, names, radius, jsonResult, response);
                         }
                         return;
                     }
@@ -158,7 +172,8 @@ function findSpotByChannel (lat, long, name, radius, jsonResult, response, token
             // if no other relevant spot is found within the radius, save the route.
             // the route must exist of at least 2 spots
             if (jsonResult.length > 1) {
-                saveGeneratedRoute(jsonResult, name, response);
+                console.log("test");
+                saveGeneratedRoute(jsonResult, namesArray[0], response);
             } else {
                 response.send({
                     "meta": utils.createErrorMeta(400, "X_001", "There are no possible routes found for this starting point and channel."),

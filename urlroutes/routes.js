@@ -98,7 +98,39 @@ exports.generateRoute = function (request, response) {
             "response": {}
         });
     }
-    
+}
+
+
+/**
+ * Store a generated route in the database based on the given parameters
+ * @param channels array of channel names to use for generation, concatenated with a | symbol
+ * @param token bearer_token of the session
+ * @param latitude latitude of the location
+ * @param longitude longitude of the location
+ * @param spot_id id of the starting spot
+ * @param radius radius to search for each next spot (in km)
+ * @return json representation of the generated route.
+ */
+exports.generateRouteFromChannelArray = function (request, response) {
+    // declare external files
+    var spotsFile = require("./spots");
+
+    // check for invalid request
+    if (typeof request.query.token !== undefined && typeof request.query.latitude !== undefined && typeof request.query.longitude !== undefined && typeof request.query.spot_id !== undefined && typeof request.query.radius !== undefined && typeof request.query.channels !== undefined) {
+        // start the route with an array containing the starting spot
+        jsonResult = [{
+            "item": "" + parseInt(request.query.spot_id)
+        }];
+        // this function contains the algorithm to generate the route
+        spotsFile.findSpotByChannel(request.query.latitude, request.query.longitude, request.query.channels, request.query.radius, jsonResult, response);
+    } else {
+        // bad request
+        response.send({
+            "meta": utils.createErrorMeta(400, "X_001", "The 'spot_id', 'token', 'latitude', 'longitude' or 'radius' has no data and doesn't allow a default or null value."),
+            "response": {}
+        });
+    }
+
 }
 
 /**

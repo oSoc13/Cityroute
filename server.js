@@ -87,6 +87,7 @@ app.get("/spots/:id", spots.findById);
 app.get("/routes", routes.findRoutesStartingAtSpot);
 app.post("/routes", routes.addRoute);
 app.get("/routes/generate/:channelname", routes.generateRoute);
+app.get("/routes/generate", routes.generateRouteFromChannelArray);
 app.get("/routes/:id", routes.findById);
 
 
