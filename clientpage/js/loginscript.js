@@ -52,7 +52,6 @@ function logOut() {
     // send a request to the nodeJS API to log the user out
     // parameters: the baearer token
     // returns: empty
-    alert(url);
     $.ajax({
         type: 'GET',
         crossDomain:true,
