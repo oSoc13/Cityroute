@@ -47,15 +47,19 @@ function generateRoute( ) {
                             waypoints.push({location:coords, stopover:true});
                             }
                         });
-    
+    var optimize = $("#optimizeSwitch").val() == 1;
+    if (generatedRoute)
+        optimize = false;
+    alert(optimize);
     // generate the request
     var dirRequest = {
        origin: latLong, 
        destination: destLatLong,
        waypoints: waypoints,
-       optimizeWaypoints:$("#optimizeSwitch").val() == 1,
+       optimizeWaypoints:optimize,
        travelMode: google.maps.DirectionsTravelMode.WALKING
      };
+     generatedRoute = false;
     
     //generate the route using Google Directions API
     dirService.route(dirRequest, onRouteCalculated );   

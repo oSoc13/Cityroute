@@ -5,6 +5,7 @@
 **/
 
 var RADIUS = 5; // the maximum distance for a next spot in a generated route(in km)
+var generatedRoute = false;;
 
 /**
 * generate a route based on a channel and a current spot
@@ -114,7 +115,7 @@ function addGeneratedChannel(){
     if (channels.length < 2) {
         alert("You have to pick at least two channels!");
     } else {
-    
+        
         for (var i = 0; i < channels.length; ++i){
             if (i < (channels.length - 1))
                 channelString += channels[i].getAttribute('data') + "|";
@@ -125,6 +126,7 @@ function addGeneratedChannel(){
         // structure for channel parameter: <channel1>|<channel2>|<channel3>|.....|<channel9>
         var url = "http://" + config_serverAddress + "/routes/generate/?channels=" + channelString + "&token=" + token + 
             "&latitude=" + latitude + "&longitude=" + longitude + "&spot_id=" + id + "&radius=" + RADIUS;
+        generatedRoute = true;
         
         // send a request to the nodeJS API to get an automatically generated route
         // parameters: latitude and longitude, a list of channels, bearer token, spot ID and a radius
@@ -140,6 +142,7 @@ function addGeneratedChannel(){
                alert(errorstatus + ": " + errorthrown);
             }
         }); 
+        
         $("#generate").hide();
         $("#loader").show();   
     }
