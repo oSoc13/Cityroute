@@ -6,7 +6,7 @@
 /**
  * Returns a StartupInfo object that contains information about the user's identity
  * @param Base64 encoded string of username:password
- * @return info of the user, including bearer_token needed for other queries.
+ * @return info of the user, including bearer_token needed for other queries
  */
 exports.login = function (request, response) {
     var utils = require("../utils");
@@ -25,6 +25,48 @@ exports.login = function (request, response) {
         }
     }, function (error, responselib, body) {
         if (( responselib.statusCode != 200 && responselib.statusCode != 401 ) || error) {
+            response.send({
+                "meta": utils.createErrorMeta(400, "X_001", "The CityLife API returned an error. Please try again later. " + error),
+                "response": {}
+            });
+        } else {
+            if (responselib.statusCode == 401) {
+                response.send({
+                    "meta": utils.createErrorMeta(401, "X_001", "Credentials are not valid."),
+                    "response": {}
+                });
+            }
+            else {
+                response.send(body);
+            }
+        }
+    });
+}
+
+/**
+ * Logs the user out
+ * @param token bearer_token of the user
+ * @return info describing an anonymous user
+ */
+exports.logout = function (request, response) {
+    var utils = require("../utils");
+    var https = require('https');
+    var querystring = require('querystring');
+    var requestlib = require('request');
+    var citylife = require('../auth/citylife');
+
+    requestlib({
+        uri: citylife.deAuthenticationCall,
+        method: "POST",
+        form: {
+            "bearer_token": request.params.token
+        },
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    }, function (error, responselib, body) {
+        if ((responselib.statusCode != 200 && responselib.statusCode != 401) || error) {
+            console.log(body);
             response.send({
                 "meta": utils.createErrorMeta(400, "X_001", "The CityLife API returned an error. Please try again later. " + error),
                 "response": {}
