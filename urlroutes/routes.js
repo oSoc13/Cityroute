@@ -90,7 +90,7 @@ exports.generateRoute = function (request, response) {
             "item": "" + parseInt(request.query.spot_id)
         }];
         // this function contains the algorithm to generate the route
-        spotsFile.findSpotByChannel(request.query.latitude, request.query.longitude, request.params.channelname, request.query.radius, request.query.spot_id, jsonResult, response);
+        spotsFile.findSpotByChannel(request.query.latitude, request.query.longitude, request.params.channelname, request.query.radius, jsonResult, response);
     } else {
         // bad request
         response.send({

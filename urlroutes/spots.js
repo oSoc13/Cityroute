@@ -11,6 +11,7 @@
  * @return JSON response
  */
 exports.findRelevantSpots = function (request, response) {
+    // declare external files
     var utils = require('../utils');
     var https = require('https');
     var querystring = require('querystring');
@@ -25,6 +26,7 @@ exports.findRelevantSpots = function (request, response) {
         var time = new Date();
         var now = "" + time.getFullYear() + "-" + utils.addZero(time.getMonth()) + "-" + utils.addZero(time.getDay()) + " " + utils.addZero(time.getHours()) + ":" + utils.addZero(time.getMinutes()) + ":" + utils.addZero(time.getSeconds());
 
+        // do call to citylife discover API
         requestlib({
             uri: citylife.discoverCall,
             method: "POST",
@@ -44,8 +46,10 @@ exports.findRelevantSpots = function (request, response) {
                     "response": {}
                 });
             } else {
+                // parse the result to JSON
                 var jsonResult = JSON.parse(body);
 
+                // calculate a static map for each relevant spot
                 var markers = [];
                 for (var i = 0; i < jsonResult.response.data.items.length; ++i) {
                     markers[0] = { 'location': jsonResult.response.data.items[i].meta_info.latitude + " " + jsonResult.response.data.items[i].meta_info.longitude };
@@ -60,6 +64,7 @@ exports.findRelevantSpots = function (request, response) {
                         null,
                         null);
                 }
+                // send the result
                 response.send(jsonResult);
             }
         });
@@ -73,9 +78,16 @@ exports.findRelevantSpots = function (request, response) {
 }
 
 /**
- * Find the most relevant spot in a radius for a certain channel and location
+ * The main function responsible for generating a route. It is a recursive function which ends when the maximum number of spots is reached, or no relevant spot is found within the radius.
+ * @param lat latitude of the previous spot
+ * @param long longitude of the previous spot
+ * @param name channel name of the channel in which to search for relevant spots
+ * @param radius radius (in km) in which to search for relevant spots
+ * @param jsonResult contains the list of previous spots already added to the route
+ * @param response allows us to return a response from within this function
+ * @param token the bearer_token of the user
  */
-function findSpotByChannel (lat, long, name, radius, spot_id, jsonResult, response, token) {
+function findSpotByChannel (lat, long, name, radius, jsonResult, response, token) {
     var utils = require("../utils");
     var https = require('https');
     var querystring = require('querystring');
@@ -87,6 +99,7 @@ function findSpotByChannel (lat, long, name, radius, spot_id, jsonResult, respon
     var time = new Date();
     var now = "" + time.getFullYear() + "-" + utils.addZero(time.getMonth()) + "-" + utils.addZero(time.getDay()) + " " + utils.addZero(time.getHours()) + ":" + utils.addZero(time.getMinutes()) + ":" + utils.addZero(time.getSeconds());
 
+    // do call to the CityLife API
     requestlib({
         uri: citylife.discoverChannelCall,
         method: "POST",
@@ -109,43 +122,72 @@ function findSpotByChannel (lat, long, name, radius, spot_id, jsonResult, respon
                 "response": {}
             });
         } else {
+            // parse the result of the request to JSON
             var body = JSON.parse(body);
 
+            // iterate through the list of spots returned by the API call
             for (var i = 0; i < body.response.data.items.length; ++i) {
+                // only continue if the resulted spot is within the radius
                 if (parseInt(body.response.data.items[i].meta_info.distance) < radius) {
                     var found = false;
+                    // check if the spot is already in the route
                     for (var j = 0; j < jsonResult.length; ++j) {
                         if (parseInt(jsonResult[j].item) == body.response.data.items[i].link.params.id) {
                             found = true;
                         }
                     }
+                    // if the spot is not in the route yet
                     if (!found) {
+                        // create json of spot id
                         var result = {
                             "item": '' + body.response.data.items[i].link.params.id
                         }
+                        // add the spot to the route
                         jsonResult.push(result);
+                        // if the route is at its max length, save it
                         if (jsonResult.length >= 10) {
                             saveGeneratedRoute(jsonResult, name, response);
                         } else {
-                            findSpotByChannel(body.response.data.items[i].meta_info.latitude, body.response.data.items[i].meta_info.longitude, name, radius, result.item, jsonResult, response);
+                            // if route can be longer, execute this function again but with parameters from the last spot added
+                            findSpotByChannel(body.response.data.items[i].meta_info.latitude, body.response.data.items[i].meta_info.longitude, name, radius, jsonResult, response);
                         }
                         return;
                     }
                 }
             }
-            saveGeneratedRoute(jsonResult, name, response);
+            // if no other relevant spot is found within the radius, save the route.
+            // the route must exist of at least 2 spots
+            if (jsonResult.length > 1) {
+                saveGeneratedRoute(jsonResult, name, response);
+            } else {
+                response.send({
+                    "meta": utils.createErrorMeta(400, "X_001", "There are no possible routes found for this starting point and channel."),
+                    "response": {}
+                });
+            }
         }
     });
 };
 
+
+/**
+ * Stores the generated route in the database
+ * @param jsonResult array containing the list of spots in the route
+ * @param name name of the channel which was used to create the route
+ * @param response allows us to return a response from within this function
+ */
 saveGeneratedRoute = function (jsonResult, name, response) {
+    // declare external files
     var mongojs = require('mongojs');
     var config = require('../auth/dbconfig');
     var server = require('../server');
     var utils = require('../utils');
+    var routesFile = require('./routes');
+
     var db = mongojs(config.dbname);
     var collection = db.collection(config.collection);
-    var routesFile = require('./routes');
+    
+    // insert the generated route in the database
     require('mongodb').connect(server.mongourl, function (err, conn) {
         collection.insert({
             'name': 'Generated ' + name,
@@ -158,6 +200,7 @@ saveGeneratedRoute = function (jsonResult, name, response) {
                     "response": {}
                 });
             } else {
+                // this function is used to return the generated route to the user, and contains a boolean as parameter so it knows a static png still has to be generated and added
                 routesFile.searchById(docs[0]._id, response, false);
             }
         });
@@ -173,6 +216,7 @@ saveGeneratedRoute = function (jsonResult, name, response) {
  * @return json representation of nearby Spots
  */
 exports.findSpotsByLatLong = function (request, response) {
+    // declare external files
     var utils = require("../utils");
     var https = require('https');
     var querystring = require('querystring');
@@ -187,6 +231,7 @@ exports.findSpotsByLatLong = function (request, response) {
         var time = new Date();
         var now = "" + time.getFullYear() + "-" + utils.addZero(time.getMonth()) + "-" + utils.addZero(time.getDay()) + " " + utils.addZero(time.getHours()) + ":" + utils.addZero(time.getMinutes()) + ":" + utils.addZero(time.getSeconds());
 
+        // send request to CityLife API
         requestlib({
             uri: citylife.discoverChannelCall,
             method: "POST",
@@ -207,8 +252,10 @@ exports.findSpotsByLatLong = function (request, response) {
                     "response": {}
                 });
             } else {
+                // parse the result to a JSON
                 var jsonResult = JSON.parse(body);
 
+                // return the JSON but first add a static map png.
                 var markers = [];
                 for (var i = 0; i < jsonResult.response.data.items.length; ++i) {
                     markers[0] = { 'location': jsonResult.response.data.items[i].meta_info.latitude + " " + jsonResult.response.data.items[i].meta_info.longitude };
@@ -243,6 +290,7 @@ exports.findSpotsByLatLong = function (request, response) {
  * @return json basic response
  */
 exports.checkIn = function (request, response) {
+    // declare external files
     var utils = require("../utils");
     var https = require('https');
     var querystring = require('querystring');
@@ -256,6 +304,7 @@ exports.checkIn = function (request, response) {
         var time = new Date();
         var now = "" + time.getFullYear() + "-" + utils.addZero(time.getMonth()) + "-" + utils.addZero(time.getDay()) + " " + utils.addZero(time.getHours()) + ":" + utils.addZero(time.getMinutes()) + ":" + utils.addZero(time.getSeconds());
 
+        // send request to CityLife API
         requestlib({
             uri: citylife.channelCall,
             method: "POST",
@@ -277,6 +326,7 @@ exports.checkIn = function (request, response) {
                     "response": {}
                 });
             } else {
+                // since the CityLife API does not return the spot_id in its response, add it to our own response
                 if (typeof body !== undefined && typeof body.response !== undefined)
                     body.response.data.spot_id = request.query.spot_id;
                 response.send(body);
@@ -302,6 +352,7 @@ exports.checkIn = function (request, response) {
  * @return something
  */
 exports.search = function (request, response) {
+    // declare external file
     var utils = require("../utils");
     var https = require('https');
     var querystring = require('querystring');
@@ -315,6 +366,7 @@ exports.search = function (request, response) {
         var time = new Date();
         var now = "" + time.getFullYear() + "-" + utils.addZero(time.getMonth()) + "-" + utils.addZero(time.getDay()) + " " + utils.addZero(time.getHours()) + ":" + utils.addZero(time.getMinutes()) + ":" + utils.addZero(time.getSeconds());
 
+        // send request to CityLife API
         requestlib({
             uri: citylife.channelCall,
             method: "POST",
@@ -337,9 +389,8 @@ exports.search = function (request, response) {
                     "response": {}
                 });
             } else {
-                var jsonResult = body;
-
-                response.send(jsonResult);
+                // just return the response of the CityLife API
+                response.send(body);
             }
         });
     }
@@ -359,11 +410,13 @@ exports.search = function (request, response) {
  * @return json representation of the Spot
  */
 exports.findById = function (request, response) {
+    // declare external files
     var utils = require("../utils");
     var https = require('https');
     var requestlib = require('request');
     var citylife = require('../auth/citylife');
 
+    // send request to the CityLife API
     requestlib({
         uri: citylife.getSpotByIdCall + request.params.id,
         method: "GET",
@@ -377,6 +430,7 @@ exports.findById = function (request, response) {
                 "response": {}
             });
         } else {
+            // parse to JSON but return as string.
             var jsonResult = JSON.parse(body);
 
             response.send(JSON.stringify(jsonResult));
@@ -384,4 +438,5 @@ exports.findById = function (request, response) {
     });
 };
 
+// allow this function to be called from other files
 exports.findSpotByChannel = findSpotByChannel;
