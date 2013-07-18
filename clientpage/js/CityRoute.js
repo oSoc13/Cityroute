@@ -35,7 +35,8 @@ $(document).ready( function() {
     $("#searchform").hide();
     $("#tabs").hide();
     $("#generate").hide();
-    $("#generateTab").hide();     
+    $("#generateTab").hide();    
+    $("#loader").hide();    
 });
 
 
@@ -62,6 +63,7 @@ function restart() {
     $("#searchresults").html("");
     $("#generate").hide();
     $("#generateTab").hide();
+    $("#loader").hide();   
     
     // stop the location tracking
     window.clearInterval(taskID);

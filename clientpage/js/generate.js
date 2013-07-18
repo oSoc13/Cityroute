@@ -34,16 +34,18 @@ function autoGenerateRoute() {
         error: function(jqXHR, errorstatus, errorthrown) {
            alert(errorstatus + ": " + errorthrown);
         }
-    });  
+    }); 
+    $("#generate").hide();
+    $("#loader").show();
 };
 
 /**
 * callback function after generating a route 
 */
 function onGetGeneratedRoute(data, textStatus, jqXHR) {
+    $("#loader").hide();
     if (data.meta.code == 200) {
         selectRoute(data.response.id);
-        $("#generate").hide();
         $("#routeBuilder").hide();
         $("#searchform").hide();
         $("#sortableInput").html("");

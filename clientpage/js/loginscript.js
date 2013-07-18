@@ -25,6 +25,8 @@ function loginuser(){
            alert(errorstatus + ": " + errorthrown);
         }
     });
+    $("#login").hide();
+    $("#loader").show();
 };
 
 /**
