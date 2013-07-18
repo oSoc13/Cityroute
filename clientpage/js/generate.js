@@ -1,8 +1,14 @@
 /**
 * @author Mathias Raets
 * @copyright: OKFN Belgium
+* this file contains the logic to automatically generate routes
 **/
 
+var RADIUS = 5; // the maximum distance for a next spot in a generated route(in km)
+
+/**
+* generate a route based on a channel and a current spot
+*/
 function autoGenerateRoute() {
     var spot = spots[0];
     var token = $.cookie("token");
@@ -13,7 +19,11 @@ function autoGenerateRoute() {
     
 
     var url = "http://" + config_serverAddress + "/routes/generate/" + channelname + "?token=" + token + 
-        "&latitude=" + latitude + "&longitude=" + longitude + "&spot_id=" + id + "&radius=5";
+        "&latitude=" + latitude + "&longitude=" + longitude + "&spot_id=" + id + "&radius=" + RADIUS;
+    
+    // send a request to the nodeJS API to get an automatically generated route
+    // parameters: latitude and longitude, channel name, bearer token, spot ID and a radius
+    // returns: a fully generated route
     
      $.ajax({
         type: 'GET',
@@ -27,6 +37,9 @@ function autoGenerateRoute() {
     });  
 };
 
+/**
+* callback function after generating a route 
+*/
 function onGetGeneratedRoute(data, textStatus, jqXHR) {
     if (data.meta.code == 200) {
         selectRoute(data.response.id);
@@ -44,7 +57,9 @@ function onGetGeneratedRoute(data, textStatus, jqXHR) {
     }
 };
 
-
+/**
+* function that shows/hides the correct divs when generating a route 
+*/
 function showGenerate() {
     $("#geolocationPar").hide(),
     $("#map-canvas").hide();
@@ -64,5 +79,4 @@ function showGenerate() {
     window.clearInterval(taskID);
     nearbySpotOpened = false;
     $("#generate").show();
-}
-
+};

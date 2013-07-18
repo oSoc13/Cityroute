@@ -70,6 +70,11 @@ function selectRoute(routeID) {
     $("#routes").hide();
     $("#map-canvas").show();
     $("#map-canvas").height(300);
+    
+    // send a request to the nodeJS API to get an selected route
+    // parameters: route ID
+    // returns: a route with all the spots    
+    
     $.ajax({
        type: 'GET',
        crossDomain:true,

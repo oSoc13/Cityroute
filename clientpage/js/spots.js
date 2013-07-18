@@ -27,9 +27,11 @@ function getGeolocation() {
 
 /**
 * callback function for the geolocation API
+* @param position: the current position
 */
 function onLocationKnown(position) {
     $("#geolocationPar").html("Latitude: " + position.coords.latitude +  "</br>Longitude: " + position.coords.longitude);   
+    
    // send a request to the nodeJS API to acquire the nearby spots
    // parameters: latitude and longitude
    // returns: list of spots
@@ -48,7 +50,7 @@ function onLocationKnown(position) {
 
 /**
 * callback function after the call in showPosition
-* parse the list of nearby spots and show them in an (ugly) table
+* parse the list of nearby spots and show them
 */
 function onGetSpots(data, textStatus, jqXHR) {
     if (data.meta.code == 200) {
@@ -56,7 +58,7 @@ function onGetSpots(data, textStatus, jqXHR) {
         routeBuilderClearSpots();
         $.each(data.response.data.items, function(index, value) {
             $('#spotListTable').append('<tr><td>' + value.title + '</td><td>' + value.meta_info.distance_str + 
-            '</td><td> <input type="button" onclick=checkIn("' + value.link.params.id + '") value="Check In" /></tr>');
+                '</td><td> <input type="button" onclick=checkIn("' + value.link.params.id + '") value="Check In" /></tr>');
             $("#geolocationPar").hide();
             $("#spotList").show();
             routeBuilderAddSpot(value);
@@ -71,6 +73,10 @@ function onGetSpots(data, textStatus, jqXHR) {
 * @param spotID the id of the spot where you want to check in
 */
 function checkIn( spotID ) {
+
+    // send a request to the nodeJS API to check in at a spot
+    // parameters: the bearer token and the spot id
+    // returns: confirmation of the check-in, spot ID
     var url =  "http://" + config_serverAddress + "/spots/checkin?spot_id=" + spotID + "&token=" + $.cookie("token");
     $.ajax({
        type: 'GET',
@@ -82,6 +88,8 @@ function checkIn( spotID ) {
            alert("Error: " + errorstatus);
         }
     });
+    
+    // set the start spot for a route
     routeBuilderSetFirstSpot(spotID);
      $("#map-canvas").height(0);
 };

@@ -11,6 +11,11 @@ function loginuser(){
     var userName = $("#username").val();
     var encoded = $.base64('btoa',userName + ":" + psw, false);
     var url =  "http://" + config_serverAddress + "/users/login/" + encoded;
+    
+    // send a request to the nodeJS API to log the user in
+    // parameters: Base64 encoded <username>:<password>
+    // returns: bearer token
+    
     $.ajax({
        type: 'GET',
        crossDomain:true,

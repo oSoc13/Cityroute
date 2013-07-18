@@ -9,15 +9,16 @@
 * on document ready: verify if a user is logged in, show and hide the correct views
 **/
 $(document).ready( function() {
-    // User logged in
+    // if a user is logged in
     if ($.cookie("token") != null) {
         $("#login").hide();
         $("#geolocationPar").show();
-        getGeolocation();
         $("#loginLink").show();
         $("#restart").show();
+        
+        getGeolocation();
     }
-    // User is not logged in
+    // if a user is not is not logged in
     else {
         $("#geolocationPar").hide(),
         $("#map-canvas").hide();
@@ -61,6 +62,8 @@ function restart() {
     $("#searchresults").html("");
     $("#generate").hide();
     $("#generateTab").hide();
+    
+    // stop the location tracking
     window.clearInterval(taskID);
     nearbySpotOpened = false;
 };
