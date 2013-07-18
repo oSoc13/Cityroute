@@ -160,7 +160,7 @@ function findSpotByChannel (lat, long, names, radius, jsonResult, response, toke
                         jsonResult.push(result);
                         // if the route is at its max length, save it
                         if (jsonResult.length >= 10) {
-                            saveGeneratedRoute(jsonResult, namesArray[0], response);
+                            saveGeneratedRoute(jsonResult, namesArray, response);
                         } else {
                             // if route can be longer, execute this function again but with parameters from the last spot added
                             findSpotByChannel(body.response.data.items[i].meta_info.latitude, body.response.data.items[i].meta_info.longitude, names, radius, jsonResult, response);
@@ -173,7 +173,7 @@ function findSpotByChannel (lat, long, names, radius, jsonResult, response, toke
             // the route must exist of at least 2 spots
             if (jsonResult.length > 1) {
                 console.log("test");
-                saveGeneratedRoute(jsonResult, namesArray[0], response);
+                saveGeneratedRoute(jsonResult, namesArray, response);
             } else {
                 response.send({
                     "meta": utils.createErrorMeta(400, "X_001", "There are no possible routes found for this starting point and channel."),
@@ -191,7 +191,7 @@ function findSpotByChannel (lat, long, names, radius, jsonResult, response, toke
  * @param name name of the channel which was used to create the route
  * @param response allows us to return a response from within this function
  */
-saveGeneratedRoute = function (jsonResult, name, response) {
+saveGeneratedRoute = function (jsonResult, names, response) {
     // declare external files
     var mongojs = require('mongojs');
     var config = require('../auth/dbconfig');
@@ -202,11 +202,22 @@ saveGeneratedRoute = function (jsonResult, name, response) {
     var db = mongojs(config.dbname);
     var collection = db.collection(config.collection);
     
+    var namesString = "";
+    if (names.length == 1) {
+        namesString = names[0];
+    } else {
+        namesString += names[0];
+        for (var i = 1; i < names.length - 1; ++i) {
+            namesString += ", " + names[i];
+        }
+        namesString += " and " + names[names.length - 1] + ".";
+    }
+
     // insert the generated route in the database
     require('mongodb').connect(server.mongourl, function (err, conn) {
         collection.insert({
-            'name': 'Generated ' + name,
-            'description': 'This is a generated route.',
+            'name': 'Generated Route',
+            'description': 'This is a generated route using the following channels: ' + namesString,
             'points': jsonResult
         }, function (err, docs) {
             if (err) {
