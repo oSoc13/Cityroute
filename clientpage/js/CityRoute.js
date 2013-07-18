@@ -62,7 +62,7 @@ function restart() {
     $("#tabs").hide();
     $("#searchresults").html("");
     $("#generate").hide();
-    $("#generateTab").hide();
+    $("#generateTab").hide();   
     $("#loader").hide();   
     
     // stop the location tracking
