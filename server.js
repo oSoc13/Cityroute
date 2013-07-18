@@ -1,7 +1,9 @@
-﻿// @author: Thomas Stockx
-// @copyright: OKFN Belgium
-
-// Node.js entry point
+﻿/*
+ * @author: Thomas Stockx
+ * @copyright: OKFN Belgium
+ *
+ * Node.js entry point
+ */
 
 // declare external files
 var express = require("express");
