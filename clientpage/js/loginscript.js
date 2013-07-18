@@ -47,6 +47,32 @@ function onLoggedIn(data, textStatus, jqXHR) {
 * log out
 */
 function logOut() {
-    $.removeCookie("token");
-    location.reload();    
+
+    var url =  "http://" + config_serverAddress + "/users/logout/" + $.cookie("token");
+    // send a request to the nodeJS API to log the user out
+    // parameters: the baearer token
+    // returns: empty
+    alert(url);
+    $.ajax({
+        type: 'GET',
+        crossDomain:true,
+        url: url,
+        success: onLoggedOut,
+        error: function(jqXHR, errorstatus, errorthrown) {
+           alert(errorstatus + ": aaa" + errorthrown);
+        }
+    }); 
+};
+
+/**
+* callback function after logging out
+*/
+function onLoggedOut(data, textStatus, jqXHR) {
+    data = JSON.parse(data);
+    if (data.meta.code == 200) {
+        $.removeCookie("token");
+        location.reload();
+    } else {
+        alertAPIError(data.meta.message)
+    }
 };
