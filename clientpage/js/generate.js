@@ -81,6 +81,7 @@ function showGenerate() {
     window.clearInterval(taskID);
     nearbySpotOpened = false;
     $("#generate").show();
+    $("#channels").html("");
 };
 
 /**
@@ -110,32 +111,36 @@ function addGeneratedChannel(){
     var token = $.cookie("token");
     var id = spot.link.params.id;
     
-    for (var i = 0; i < channels.length; ++i){
-        if (i < (channels.length - 1))
-            channelString += channels[i].getAttribute('data') + "|";
-        else
-            channelString += channels[i].getAttribute('data');
-    }
+    if (channels.length < 2) {
+        alert("You have to pick at least two channels!");
+    } else {
     
-    // structure for channel parameter: <channel1>|<channel2>|<channel3>|.....|<channel9>
-    var url = "http://" + config_serverAddress + "/routes/generate/?channels=" + channelString + "&token=" + token + 
-        "&latitude=" + latitude + "&longitude=" + longitude + "&spot_id=" + id + "&radius=" + RADIUS;
-    
-    // send a request to the nodeJS API to get an automatically generated route
-    // parameters: latitude and longitude, a list of channels, bearer token, spot ID and a radius
-    // returns: a fully generated route
-    
-     $.ajax({
-        type: 'GET',
-        crossDomain:true,
-        url: url,
-        cache: false,
-        success: onGetGeneratedRoute,
-        error: function(jqXHR, errorstatus, errorthrown) {
-           alert(errorstatus + ": " + errorthrown);
+        for (var i = 0; i < channels.length; ++i){
+            if (i < (channels.length - 1))
+                channelString += channels[i].getAttribute('data') + "|";
+            else
+                channelString += channels[i].getAttribute('data');
         }
-    }); 
-    $("#generate").hide();
-    $("#loader").show();    
     
+        // structure for channel parameter: <channel1>|<channel2>|<channel3>|.....|<channel9>
+        var url = "http://" + config_serverAddress + "/routes/generate/?channels=" + channelString + "&token=" + token + 
+            "&latitude=" + latitude + "&longitude=" + longitude + "&spot_id=" + id + "&radius=" + RADIUS;
+        
+        // send a request to the nodeJS API to get an automatically generated route
+        // parameters: latitude and longitude, a list of channels, bearer token, spot ID and a radius
+        // returns: a fully generated route
+        
+        $.ajax({
+            type: 'GET',
+            crossDomain:true,
+            url: url,
+            cache: false,
+            success: onGetGeneratedRoute,
+            error: function(jqXHR, errorstatus, errorthrown) {
+               alert(errorstatus + ": " + errorthrown);
+            }
+        }); 
+        $("#generate").hide();
+        $("#loader").show();   
+    }
 };
